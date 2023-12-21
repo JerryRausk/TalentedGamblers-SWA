@@ -2,7 +2,7 @@
 import { ref } from "vue";
 const text = ref("");
 async function testBack() {
-  text.value = await (await fetch("/api/message")).json();
+  text.value = await (await fetch("/api/createLeague")).json();
 }
 </script>
 
