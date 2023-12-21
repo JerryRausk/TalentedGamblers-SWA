@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { ref } from "vue";
+const text = ref("");
+async function testBack() {
+  text.value = await (await fetch("/api/message")).json();
+}
 </script>
 
 <template>
   <div class="justify-self-center">
     <h1 class="text-center">Meatheads 2023</h1>
+    <button @click="testBack">Hello</button>
+    <h3>{{ text }}</h3>
   </div>
 </template>
 
