@@ -1,14 +1,12 @@
+<script setup lang="ts">
+import MeatHeadPreview from './components/MeatHeadPreview.vue';
+import NavBar from './components/NavBar.vue';
+</script>
+
 <template>
-  <div>Hello {{ value }}</div>
+    <NavBar />
+<MeatHeadPreview />
 </template>
 
-<script>
-export default {
-  name: "App",
-  data() {
-    return {
-      value: "World"
-    };
-  }
-};
-</script>
+<style scoped>
+</style>
