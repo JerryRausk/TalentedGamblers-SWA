@@ -13,7 +13,7 @@ async function getUserInfoFromIssuer(token: string) {
     const headers = {[TOKENHEADERNAME]: token, "Content-Type": "application/json"}
     console.log(`Sending req to ${USERINFOURL}`)
     const userInfo =  await fetch(USERINFOURL, {headers});
-    console.log(`Got user info: ${userInfo}`)
+    console.log(`Got user info: ${JSON.stringify(userInfo)}`)
     const userInfoObj = await userInfo.json();
     console.log(`Parsed userinfo to ${JSON.stringify(userInfoObj)}`)
     if(!EXPECTEDKEYS.every(key => Object.keys(userInfoObj).includes(key))) return null;
