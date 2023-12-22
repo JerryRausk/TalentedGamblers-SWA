@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import MeatHeadPreview from './components/MeatHeadPreview.vue';
+import { RouterView } from 'vue-router';
 import NavBar from './components/NavBar.vue';
 </script>
-
+ 
 <template>
     <NavBar />
-<MeatHeadPreview />
+    <RouterView />
 </template>
 
 <style scoped>
