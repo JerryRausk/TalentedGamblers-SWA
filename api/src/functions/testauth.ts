@@ -13,7 +13,7 @@ async function getUserInfoFromIssuer(token: string) {
     const headers = {[TOKENHEADERNAME]: token, "Content-Type": "application/json"}
     console.log(`Sending req to ${USERINFOURL}`)
     const userInfo =  await fetch(USERINFOURL, {headers});
-    console.log(`Got user info: ${JSON.stringify(userInfo)}`)
+    console.log(`UserInfo request return status ${userInfo.status}`);
     const userInfoObj = await userInfo.json();
     console.log(`Parsed userinfo to ${JSON.stringify(userInfoObj)}`)
     if(!EXPECTEDKEYS.every(key => Object.keys(userInfoObj).includes(key))) return null;
@@ -47,7 +47,7 @@ async function getAllInvitedUsers(client: CosmosClient) {
     return resources;
 }
 export async function testauth(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-    console.log(JSON.stringify(request))
+    console.log(request.headers);
     const cosmosClient = await getCosmosClient();
     const accessToken = request.headers.get(TOKENHEADERNAME)
     if(!accessToken) return { status: 401, body: "Access token is missing."}
