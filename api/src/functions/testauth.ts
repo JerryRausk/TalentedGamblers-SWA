@@ -1,7 +1,7 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { CosmosClient, SqlQuerySpec } from "@azure/cosmos";
 import { itemTypes } from "../itemTypes";
-const TOKENHEADERNAME = "Authorization";
+const TOKENHEADERNAME = "X-App-Authorization";
 const DBNAME = process.env.CosmosDBName;
 const CONTAINERNAME = process.env.CosmosContainerName;
 type User = {email: string, name: string}
@@ -10,14 +10,18 @@ type User = {email: string, name: string}
 async function getUserInfoFromIssuer(token: string) {
     const USERINFOURL = process.env.TokenIssuerUrl;
     const EXPECTEDKEYS = ["email", "name"]
-    const headers = {[TOKENHEADERNAME]: token, "Content-Type": "application/json"}
-    console.log(`Sending req to ${USERINFOURL}`)
-    const userInfo =  await fetch(USERINFOURL, {headers});
-    console.log(`UserInfo request return status ${userInfo.status}`);
-    const userInfoObj = await userInfo.json();
-    console.log(`Parsed userinfo to ${JSON.stringify(userInfoObj)}`)
-    if(!EXPECTEDKEYS.every(key => Object.keys(userInfoObj).includes(key))) return null;
-    return { email: userInfoObj["email"], name: userInfoObj["name"] } as User
+    const headers = {"Authorization": token, "Content-Type": "application/json"}
+    const userInfoResponse =  await fetch(USERINFOURL, {headers});
+    if(userInfoResponse.status !== 200) {
+        console.error(`Could not fetch userinfo from provider, status ${userInfoResponse.status}`);
+        return null;
+    }
+    const userInfo = await userInfoResponse.json();
+    if(!EXPECTEDKEYS.every(key => Object.keys(userInfo).includes(key))) {
+        console.error(`Details was missing from userinfo, userinfo: ${JSON.stringify(userInfo)}`);
+        return null
+    }
+    return { email: userInfo["email"], name: userInfo["name"] } as User
 }
 
 async function getCosmosClient() {
@@ -47,14 +51,22 @@ async function getAllInvitedUsers(client: CosmosClient) {
     return resources;
 }
 export async function testauth(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-    console.log(request.headers);
     const cosmosClient = await getCosmosClient();
     const accessToken = request.headers.get(TOKENHEADERNAME)
     if(!accessToken) return { status: 401, body: "Access token is missing."}
+
     const user = await getUserInfoFromIssuer(accessToken);
+    if(!user) {
+        return { status: 500, body: 'Failed to fetch userinfo' }
+    }
+
     const isInvited = await userIsInvited(cosmosClient, user);
-    await getAllInvitedUsers(cosmosClient);
-    return { body: `Hello, ${user.name}, your invitation returned ${isInvited}` };
+    if(!isInvited) {
+        console.warn(`User ${user.email} (${user.name}) is not invited`);
+        return {status: 401, body:"You are not invited."}
+    }
+
+    return { body: `Hello, ${user.name}, you are invited.` };
 };
 
 app.http('testauth', {

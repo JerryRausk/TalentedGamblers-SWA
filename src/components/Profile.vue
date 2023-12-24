@@ -6,7 +6,7 @@ const userinfo = ref("");
 async function testauth() {
   const t = await getAccessTokenSilently()
   const url = "/api/testauth"
-  const headers = {Authorization: `Bearer ${t}`}
+  const headers = {'X-App-Authorization': `Bearer ${t}`}
   userinfo.value = await (await fetch(url, {headers})).text()
 }
 </script>
