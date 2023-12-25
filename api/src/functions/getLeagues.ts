@@ -1,17 +1,13 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { Authenticate } from "../middleware/auth";
+import { addMiddleWares, Permission } from "../middleware/middlewares.js";
 import { User } from "@auth0/auth0-vue";
-
-async function callHandler(request: HttpRequest, context: InvocationContext, user: User): Promise<HttpResponseInit> {
-    context.log(`Http function processed request for url "${request.url}"`);
-
-    const name = request.query.get('name') || await request.text() || 'worldddd';
-
-    return { body: `Hello, ${name}!` };
+async function callHandler(request: HttpRequest, context: InvocationContext, user: User, permissions: Permission[]): Promise<HttpResponseInit> {
+    context.log(`Callback was reached with user ${user} and permissions ${permissions}`)
+    return { body: `Hello, ${user.email}!` };
 }
 
 export async function getLeagues(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-    return Authenticate(request, context, callHandler)
+    return addMiddleWares(request, context, callHandler)
 };
 
 app.http('getLeagues', {

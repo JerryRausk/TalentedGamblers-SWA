@@ -1,21 +1,25 @@
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { CosmosClient } from "@azure/cosmos";
-
-const TOKENHEADERNAME = "Authorization";
+import { Container, CosmosClient } from "@azure/cosmos";
+const TOKENHEADERNAME = "X-App-Authorization";
 const DBNAME = process.env.CosmosDBName;
 const CONTAINERNAME = process.env.CosmosContainerName;
 type User = {email: string, name: string}
-type AuthenticatedRequest = (request: HttpRequest, context: InvocationContext, user: User) => Promise<HttpResponseInit>
-
 
 async function getUserInfoFromIssuer(token: string) {
     const USERINFOURL = process.env.TokenIssuerUrl;
     const EXPECTEDKEYS = ["email", "name"]
-    const headers = {[TOKENHEADERNAME]: token, "Content-Type": "application/json"}
-    const userInfo =  await fetch(USERINFOURL, {headers});
-    const userInfoObj = await userInfo.json();
-    if(!EXPECTEDKEYS.every(key => Object.keys(userInfoObj).includes(key))) return null;
-    return { email: userInfoObj["email"], name: userInfoObj["name"] } as User
+    const headers = {"Authorization": token, "Content-Type": "application/json"}
+    const userInfoResponse =  await fetch(USERINFOURL, {headers});
+    if(userInfoResponse.status !== 200) {
+        console.error(`Could not fetch userinfo from provider, status ${userInfoResponse.status}`);
+        return null;
+    }
+    const userInfo = await userInfoResponse.json();
+    if(!EXPECTEDKEYS.every(key => Object.keys(userInfo).includes(key))) {
+        console.error(`Details was missing from userinfo, userinfo: ${JSON.stringify(userInfo)}`);
+        return null
+    }
+    return { email: userInfo["email"], name: userInfo["name"] } as User
 }
 
 async function getCosmosClient() {
@@ -29,19 +33,31 @@ function getContainer(client: CosmosClient) {
     return db.container(CONTAINERNAME)
 }
 
+async function getItemOrNullById(container: Container, id: string) {
+    const i = await container.item(id, id).read();
+    if(i.statusCode === 200) return i.resource;
+    return null;
+}
 async function userIsInvited(client: CosmosClient, user: User) {
-    const foundUser = getContainer(client).item(user.email.toLowerCase());
-    return !!foundUser
+    const foundUser = await getItemOrNullById(getContainer(client), user.email.toLowerCase());
+    if(foundUser.statusCode === 200) return true;
+    return false;
 }
 
-export async function Authenticate(request: HttpRequest, context: InvocationContext, req: AuthenticatedRequest): Promise<HttpResponseInit> {
+export async function Authenticate(request: HttpRequest) {
     const cosmosClient = await getCosmosClient();
     const accessToken = request.headers.get(TOKENHEADERNAME)
-    if(!accessToken) return { status: 401, body: "Access token is missing."}
+    if(!accessToken) return {
+        success: false as const,
+        data: { status: 401, body: "Access token is missing."} as HttpResponseInit 
+    }
 
     const user = await getUserInfoFromIssuer(accessToken);
     const isInvited = await userIsInvited(cosmosClient, user);
-    if(!isInvited) return {status: 403, body: "Not invited"}
+    if(!isInvited) return {
+        success: false as const,
+        data: {status: 403, body: "Not invited"} as HttpResponseInit
+    }
 
-    return await req(request, context, user);
+    return {success: true as const, data: user};
 }
