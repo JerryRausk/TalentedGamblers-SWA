@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import {ref} from "vue";
 import { useAuth0 } from '@auth0/auth0-vue';
+import { Button } from "@/components/ui/button";
+import { useToast } from '@/components/ui/toast/use-toast'
+
 const { user, getAccessTokenSilently } = useAuth0();
-const userinfo = ref("");
+const { toast } = useToast()
+
 async function testauth() {
   const t = await getAccessTokenSilently()
   const url = "/api/testauth"
   const headers = {'X-App-Authorization': `Bearer ${t}`}
   await fetch("/api/getLeagues", {headers})
-  userinfo.value = await (await fetch(url, {headers})).text()
+  const res = await fetch(url, {headers});
+  const resText = await res.text()
+  toast({
+    title: res.status === 200 ? "Succé" : "Katastrof",
+    description: resText   
+  })
 }
+
 </script>
 
 <template>
@@ -17,10 +26,7 @@ async function testauth() {
     <h1 class="text-center">{{user.name}}</h1>
     <h1 class="text-center">{{user.nickname}}</h1>
     <h1 class="text-center">{{user.email}}</h1>
-    <button @click="testauth">Test Auth</button>
-    <div class="w-40">
-      <p>{{ userinfo }}</p>
-    </div>
+    <Button @click="testauth">Test Auth</Button>
   </div>
 </template>
 

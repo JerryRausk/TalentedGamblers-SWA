@@ -5,6 +5,7 @@ import { createAuth0, authGuard } from '@auth0/auth0-vue';
 import MeatHeadPreviewVue from './components/MeatHeadPreview.vue';
 import ProfileVue from './components/Profile.vue';
 import { createWebHashHistory, createRouter, RouteRecordRaw } from "vue-router";
+import leagueViewVue from './components/leagueView.vue';
 
 const auth0 = createAuth0({
     domain: "talented-gamblers.eu.auth0.com",
@@ -17,6 +18,7 @@ const auth0 = createAuth0({
 const routes: RouteRecordRaw[] = [
   { path: '/', component: MeatHeadPreviewVue },
   { path: '/profile', component: ProfileVue, beforeEnter: authGuard },
+  { path: '/league', component: leagueViewVue, beforeEnter: authGuard }
 ]
 
 const router = createRouter({
