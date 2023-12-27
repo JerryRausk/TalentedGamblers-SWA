@@ -25,7 +25,7 @@ function handleStockTransaction(buyPosition: boolean, ticker: string, amount: nu
 </script>
 
 <template>
-    <Card class="max-w-[500px]">
+    <Card class="max-w-[360px] mx-auto mt-4">
         <CardHeader>
             <CardTitle>Add transaction</CardTitle>
         </CardHeader>
@@ -47,7 +47,7 @@ function handleStockTransaction(buyPosition: boolean, ticker: string, amount: nu
                 <Popover>
                     <PopoverTrigger as-child>
                         <Button :variant="'outline'" :class="cn(
-                            'w-[200px] justify-start text-left font-normal',
+                            'w-[280px] justify-start text-left font-normal',
                             !transactionDate && 'text-muted-foreground',
                         )">
                             <CalendarIcon class="mr-2 h-4 w-4" />

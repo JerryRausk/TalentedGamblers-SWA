@@ -34,7 +34,7 @@ const { user, isAuthenticated } = useAuth0();
     <NavigationMenuList>
       <NavigationMenuItem>
         <NavigationMenuLink :as="RouterLink" to="/" :class="navigationMenuTriggerStyle()">
-          Talented Gamblers
+          TG
         </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>
