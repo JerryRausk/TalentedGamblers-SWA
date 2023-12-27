@@ -6,8 +6,20 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle
+  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+} from '@/components/ui/dropdown-menu'
+import {
+  Button
+} from "@/components/ui/button"
 const { logout, loginWithPopup } = useAuth0();
 function logoutUser() {
   logout({ logoutParams: { returnTo: window.location.origin } });
@@ -18,43 +30,53 @@ function login() {
 const { user, isAuthenticated } = useAuth0();
 </script>
 <template>
-  <NavigationMenu>
+  <NavigationMenu class="min-w-full flex flex-row justify-between">
     <NavigationMenuList>
-      <RouterLink to="/">
-        <NavigationMenuItem>
-          <NavigationMenuLink :class="navigationMenuTriggerStyle()">
-            Talented Gamblers
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </RouterLink>
-
-      <RouterLink v-if="isAuthenticated" to="/profile">
-        <NavigationMenuItem>
-          <NavigationMenuLink :class="navigationMenuTriggerStyle()">
-            {{ user?.name ?? user?.nickname }}
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </RouterLink>
-
-      <RouterLink v-if="isAuthenticated" to="/league">
-        <NavigationMenuItem>
-          <NavigationMenuLink :class="navigationMenuTriggerStyle()">
-            League
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </RouterLink>
-
-      <NavigationMenuItem v-if="isAuthenticated">
-        <NavigationMenuLink class="cursor-pointer" @click="logoutUser" :class="navigationMenuTriggerStyle()">
-          Logga ut
+      <NavigationMenuItem>
+        <NavigationMenuLink :as="RouterLink" to="/" :class="navigationMenuTriggerStyle()">
+          Talented Gamblers
         </NavigationMenuLink>
       </NavigationMenuItem>
-      <NavigationMenuItem v-else>
+    </NavigationMenuList>
+    <NavigationMenuList >
+      <NavigationMenuItem v-if="!isAuthenticated">
         <NavigationMenuLink class="cursor-pointer" @click="login" :class="navigationMenuTriggerStyle()">
           Logga in
         </NavigationMenuLink>
       </NavigationMenuItem>
-
+      <DropdownMenu v-if="isAuthenticated && user">
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost">
+            {{ user?.name ?? user?.nickname }}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-48 me-1" align="center">
+          <DropdownMenuLabel class="font-normal flex">
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm font-medium leading-none">
+                {{user.name ?? ""}}
+              </p>
+              <p class="text-xs leading-none text-muted-foreground">
+                {{ user.email }}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/profile" >
+                  Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/league">
+                  League
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem class="cursor-pointer h-12" @click="logoutUser">
+                Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    
     </NavigationMenuList>
   </NavigationMenu>
 </template>
