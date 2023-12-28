@@ -6,6 +6,7 @@ import MeatHeadPreviewVue from './components/MeatHeadPreview.vue';
 import ProfileVue from './components/Profile.vue';
 import { createWebHashHistory, createRouter, RouteRecordRaw } from "vue-router";
 import leagueViewVue from './components/leagueView.vue';
+import { createPinia } from 'pinia'
 
 const auth0 = createAuth0({
     domain: "talented-gamblers.eu.auth0.com",
@@ -24,6 +25,8 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes, 
-})  
+})
+
+const pinia = createPinia()
   
-createApp(App).use(auth0).use(router).mount('#app')
+createApp(App).use(pinia).use(auth0).use(router).mount('#app')

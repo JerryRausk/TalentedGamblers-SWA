@@ -38,6 +38,29 @@ const { user, isAuthenticated } = useAuth0();
         </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>
+    
+    <DropdownMenu v-if="isAuthenticated && user">
+        <DropdownMenuTrigger>
+          Meatheads 2023 ▾
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-48 me-1" align="center">
+          <DropdownMenuLabel class="font-normal flex">
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm font-medium leading-none">
+                Switch league
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+            <DropdownMenuItem class="cursor-pointer h-12">
+                  League 2
+            </DropdownMenuItem>
+            <DropdownMenuItem class="cursor-pointer h-12">
+                  League 3
+            </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
     <NavigationMenuList >
       <NavigationMenuItem v-if="!isAuthenticated">
         <NavigationMenuLink class="cursor-pointer" @click="login" :class="navigationMenuTriggerStyle()">
@@ -47,7 +70,7 @@ const { user, isAuthenticated } = useAuth0();
       <DropdownMenu v-if="isAuthenticated && user">
         <DropdownMenuTrigger as-child>
           <Button variant="ghost">
-            {{ user?.name ?? user?.nickname }}
+            {{ user.name ? user.name.split(" ").map(s => s[0]).join("") : "??" }}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-48 me-1" align="center">

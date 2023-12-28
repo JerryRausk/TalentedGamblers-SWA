@@ -6,21 +6,28 @@ import { ref } from "vue";
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { cn } from "@/lib/utils"
 import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
+import { Investment, InvestmentTypes } from '@/models/investments';
 
-
-const transactionType = ref("stock");
-const transactionDate = ref(new Date().toLocaleDateString("sv-SE"));
-function handleStockTransaction(buyPosition: boolean, ticker: string, amount: number, price: number) {
-    console.log("Handling stock form");
-    console.log(transactionType.value);
-    console.log(transactionDate.value);
-    console.log({buyPosition})
-    console.log({ticker})
-    console.log({amount})
-    console.log({price})
-
+const emits = defineEmits<{
+    (e: "newInvestment", investment: Investment): void;
+}>();
+const investmentType = ref("stock");
+const investmentDate = ref(new Date().toLocaleDateString("sv-SE"));
+function handleStockInvestment(buyPosition: boolean, ticker: string, amount: number, price: number) {
+    emits("newInvestment", {
+        id: "",
+        date: investmentDate.value, 
+        verified: false, 
+        verifiedBy: null, 
+        data: {
+            type: InvestmentTypes.Stock,
+            amount,
+            price,
+            buyPosition, ticker
+        }
+    });
 }
 </script>
 
@@ -31,7 +38,7 @@ function handleStockTransaction(buyPosition: boolean, ticker: string, amount: nu
         </CardHeader>
         <CardContent>
             <div class="flex row justify-between gap-10">
-                <Select v-model="transactionType">
+                <Select v-model="investmentType">
                     <SelectTrigger>
                         <SelectValue placeholder="Type of transaction" />
                     </SelectTrigger>
@@ -48,18 +55,18 @@ function handleStockTransaction(buyPosition: boolean, ticker: string, amount: nu
                     <PopoverTrigger as-child>
                         <Button :variant="'outline'" :class="cn(
                             'w-[280px] justify-start text-left font-normal',
-                            !transactionDate && 'text-muted-foreground',
+                            !investmentDate && 'text-muted-foreground',
                         )">
                             <CalendarIcon class="mr-2 h-4 w-4" />
-                            <span>{{ transactionDate }}</span>
+                            <span>{{ investmentDate }}</span>
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent class="w-auto p-0">
-                        <Calendar :masks="{modelValue: 'YYYY-MM-DD'}" v-model.string="transactionDate" />
+                        <Calendar :masks="{ modelValue: 'YYYY-MM-DD' }" v-model.string="investmentDate" />
                     </PopoverContent>
                 </Popover>
             </div>
-            <StockSubForm v-if="transactionType==='stock'" @form-submit="handleStockTransaction"/>
+            <StockSubForm v-if="investmentType === 'stock'" @form-submit="handleStockInvestment" />
         </CardContent>
         <CardFooter>
         </CardFooter>

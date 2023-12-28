@@ -23,7 +23,6 @@ const form = useForm({
 })
 
 const onSubmit = form.handleSubmit((values) => {
-    console.log("Values from stockform: ", values)
     emits("formSubmit", values.buyPosition, values.ticker, values.amount, values.price)
 })
 </script>
