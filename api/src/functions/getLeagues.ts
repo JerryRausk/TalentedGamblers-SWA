@@ -1,9 +1,11 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { addMiddleWares, Permission } from "../middleware/middlewares.js";
+import { addMiddleWares } from "../middleware/middlewares.js";
 import { User } from "@auth0/auth0-vue";
-async function callHandler(request: HttpRequest, context: InvocationContext, user: User, permissions: Permission[]): Promise<HttpResponseInit> {
-    context.log(`Callback was reached with user ${user} and permissions ${permissions}`)
-    return { body: `Hello, ${user.email}!` };
+import { LeagueMembership } from "../itemTypes.js";
+import { getLeaguesByIds } from "../queries/getLeaguesByIds.js";
+async function callHandler(request: HttpRequest, context: InvocationContext, user: User, LeagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
+    const res = await getLeaguesByIds(LeagueMemberships.map(l => l.leagueId))
+    return { jsonBody: res };
 }
 
 export async function getLeagues(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {

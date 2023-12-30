@@ -1,5 +1,7 @@
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { Container, CosmosClient } from "@azure/cosmos";
+import { CosmosClient } from "@azure/cosmos";
+import { getItemOrNullById } from "../services/cosmosService.js"
+import { itemTypes } from "../itemTypes.js";
 const TOKENHEADERNAME = "X-App-Authorization";
 const DBNAME = process.env.CosmosDBName;
 const CONTAINERNAME = process.env.CosmosContainerName;
@@ -22,39 +24,13 @@ async function getUserInfoFromIssuer(token: string) {
     return { email: userInfo["email"], name: userInfo["name"] } as User
 }
 
-async function getCosmosClient() {
-    const endpoint = process.env.CosmosUrl;
-    const key = process.env.CosmosKey;
-    return new CosmosClient({ endpoint, key })
-}
-
-function getContainer(client: CosmosClient) {
-    const db = client.database(DBNAME)
-    return db.container(CONTAINERNAME)
-}
-
-async function getItemOrNullById<T>(container: Container, id: string, partitionKey?: string): Promise<T | null> {
-    /* 
-        If no partitionKey is provided, id will be used as partitionKey. 
-        If found in db removes all _ props (metadata from cosmos) and returns it, else returns null. 
-    */
-
-    if(!partitionKey) partitionKey = id;
-    const i = await container.item(id, partitionKey).read();
-    if (i.statusCode === 200) return Object.entries(i.resource).reduce((acc, [key, val]) => {
-        if (!key.startsWith("_")) return { ...acc, [key]: val }
-        else return acc
-    }, {}) as T;
-    return null;
-}
-async function userIsInvited(client: CosmosClient, user: User) {
-    const foundUser = await getItemOrNullById<User>(getContainer(client), user.email.toLowerCase());
+async function userIsInvited(user: User) {
+    const foundUser = await getItemOrNullById<User>(user.email.toLowerCase(), itemTypes.InvitedUser);
     if (foundUser) return true;
     return false;
 }
 
 export async function Authenticate(request: HttpRequest) {
-    const cosmosClient = await getCosmosClient();
     const accessToken = request.headers.get(TOKENHEADERNAME)
     if (!accessToken) return {
         success: false as const,
@@ -62,7 +38,7 @@ export async function Authenticate(request: HttpRequest) {
     }
 
     const user = await getUserInfoFromIssuer(accessToken);
-    const isInvited = await userIsInvited(cosmosClient, user);
+    const isInvited = await userIsInvited(user);
     if (!isInvited) return {
         success: false as const,
         data: { status: 403, body: "Not invited" } as HttpResponseInit
