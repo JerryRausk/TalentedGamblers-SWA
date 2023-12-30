@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 
 const emits = defineEmits<{
     (e: "formSubmit", buyPosition: boolean, ticker: string, amount: number, price: number): void
+    (e: "cancel"): void
 }>();
 
 const formSchema = toTypedSchema(z.object({
@@ -73,8 +74,14 @@ const onSubmit = form.handleSubmit((values) => {
                 <FormMessage />
             </FormItem>
         </FormField>
+        <div class="flex flex-row justify-between mt-8">
+            <Button class=" bg-green-200" type="submit">
+                Add
+            </Button>
+            <Button variant="outline" @click="emits('cancel')">
+                Cancel
+            </Button>
+        </div>
 
-        <Button class="mt-8" type="submit">
-            Add
-    </Button>
-</form></template>
+    </form>
+</template>

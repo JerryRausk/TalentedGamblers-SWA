@@ -1,25 +1,20 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import { createAuth0, authGuard } from '@auth0/auth0-vue';
-import MeatHeadPreviewVue from './components/MeatHeadPreview.vue';
-import ProfileVue from './components/Profile.vue';
+import { authGuard } from '@auth0/auth0-vue';
+import MainView from './components/MainView.vue';
+import ProfileView from './components/ProfileView.vue';
 import { createWebHashHistory, createRouter, RouteRecordRaw } from "vue-router";
-import leagueViewVue from './components/leagueView.vue';
+import LeagueView from './components/leagueView.vue';
+import Landing from './components/Landing.vue';
 import { createPinia } from 'pinia'
-
-const auth0 = createAuth0({
-    domain: "talented-gamblers.eu.auth0.com",
-    clientId: "WIboaHPJD7U0AVYuaJM9DmNqBHSLZ8Wo",
-    authorizationParams: {
-      redirect_uri: window.location.origin
-    }
-  });
+import {auth0} from "./auth0.js"
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', component: MeatHeadPreviewVue },
-  { path: '/profile', component: ProfileVue, beforeEnter: authGuard },
-  { path: '/league', component: leagueViewVue, beforeEnter: authGuard }
+  { path: '/', component: Landing },
+  { path: '/main', component: MainView },
+  { path: '/profile', component: ProfileView, beforeEnter: authGuard },
+  { path: '/league', component: LeagueView, beforeEnter: authGuard }
 ]
 
 const router = createRouter({

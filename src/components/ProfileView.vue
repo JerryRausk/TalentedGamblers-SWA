@@ -2,20 +2,16 @@
 import { useAuth0 } from '@auth0/auth0-vue';
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/components/ui/toast/use-toast'
+import { getText } from "../services/apiService"
 
-const { user, getAccessTokenSilently } = useAuth0();
+const { user } = useAuth0();
 const { toast } = useToast()
 
 async function testauth() {
-  const t = await getAccessTokenSilently()
-  const url = "/api/testauth"
-  const headers = {'X-App-Authorization': `Bearer ${t}`}
-  await fetch("/api/getLeagues", {headers})
-  const res = await fetch(url, {headers});
-  const resText = await res.text()
+  const authRes = await getText("testauth");
   toast({
-    title: res.status === 200 ? "Succé" : "Katastrof",
-    description: resText   
+    title: authRes.success ? "Succé" : "Katastrof",
+    description: authRes.data ?? "Something",   
   })
 }
 

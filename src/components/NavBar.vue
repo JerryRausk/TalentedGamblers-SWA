@@ -1,25 +1,16 @@
 <script setup lang="ts">
 import { useAuth0 } from '@auth0/auth0-vue';
 import { RouterLink } from "vue-router";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuGroup,
-} from '@/components/ui/dropdown-menu'
-import {
-  Button
-} from "@/components/ui/button"
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu'
+import { Button } from "@/components/ui/button"
+import {useLeagueStore} from "@/stores/LeagueStore"
+import InvestMentForm from './forms/InvestmentForm.vue';
+import { onMounted, ref } from 'vue';
+import { Skeleton } from "@/components/ui/skeleton";
+
+const leagueStore = useLeagueStore();
+const leagueLoading = ref(true);
 const { logout, loginWithPopup } = useAuth0();
 function logoutUser() {
   logout({ logoutParams: { returnTo: window.location.origin } });
@@ -28,22 +19,29 @@ function login() {
   loginWithPopup();
 }
 const { user, isAuthenticated } = useAuth0();
+onMounted(async () => {
+  await leagueStore.refreshLeagues();
+  leagueLoading.value = false;
+})
 </script>
 <template>
   <NavigationMenu class="min-w-full flex flex-row justify-between">
     <NavigationMenuList>
       <NavigationMenuItem>
-        <NavigationMenuLink :as="RouterLink" to="/" :class="navigationMenuTriggerStyle()">
+        <NavigationMenuLink v-if="isAuthenticated" :as="RouterLink" to="/main" :class="navigationMenuTriggerStyle()">
+          TG
+        </NavigationMenuLink>
+        <NavigationMenuLink v-else="" :as="RouterLink" to="/" :class="navigationMenuTriggerStyle()">
           TG
         </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>
-    
-    <DropdownMenu v-if="isAuthenticated && user">
+    <div v-if="isAuthenticated && user && user.email && leagueStore.activeLeague && !leagueLoading">
+      <DropdownMenu class="border boder-solid border-1 border-red-400">
         <DropdownMenuTrigger>
-          Meatheads 2023 ▾
+          ▾ {{ leagueStore.activeLeague.name }}
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-48 me-1" align="center">
+        <DropdownMenuContent class="w-48 me-1">
           <DropdownMenuLabel class="font-normal flex">
             <div class="flex flex-col space-y-1">
               <p class="text-sm font-medium leading-none">
@@ -58,8 +56,17 @@ const { user, isAuthenticated } = useAuth0();
             <DropdownMenuItem class="cursor-pointer h-12">
                   League 3
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem class="cursor-pointer h-12">
+                  Create new
+            </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <InvestMentForm :user-email="user.email" :league-id="leagueStore.activeLeague.id" />
+    </div>
+    <div v-else>
+      <Skeleton class="w-[150px] h-[25px] rounded" />
+    </div>
 
     <NavigationMenuList >
       <NavigationMenuItem v-if="!isAuthenticated">
@@ -73,8 +80,8 @@ const { user, isAuthenticated } = useAuth0();
             {{ user.name ? user.name.split(" ").map(s => s[0]).join("") : "??" }}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-48 me-1" align="center">
-          <DropdownMenuLabel class="font-normal flex">
+        <DropdownMenuContent class="w-48 me-1">
+          <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/profile" >
             <div class="flex flex-col space-y-1">
               <p class="text-sm font-medium leading-none">
                 {{user.name ?? ""}}
@@ -83,15 +90,22 @@ const { user, isAuthenticated } = useAuth0();
                 {{ user.email }}
               </p>
             </div>
-          </DropdownMenuLabel>
+            </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/profile" >
-                  Profile
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+                  Dashboard
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/league">
-                  League
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+                  Leaderboard
             </DropdownMenuItem>
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+                  Verifications
+            </DropdownMenuItem>
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+                  Activities
+            </DropdownMenuItem>
+            
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem class="cursor-pointer h-12" @click="logoutUser">

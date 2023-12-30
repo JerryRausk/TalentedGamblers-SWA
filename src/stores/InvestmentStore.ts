@@ -28,6 +28,8 @@ export const useInvestmentStore = defineStore('investments', () => {
     //call api
     investments.value = [{
       id: "guid1",
+      userId: "Jerry.Rausk@gmail.com",
+      leagueId: "LeagueGuid",
       date: "2023-12-26",
       verified: false,
       verifiedBy: null,
@@ -41,6 +43,8 @@ export const useInvestmentStore = defineStore('investments', () => {
     },
     {
       id: "guid2",
+      userId: "Jerry.Rausk@gmail.com",
+      leagueId: "LeagueGuid",
       date: "2023-12-26",
       verified: true,
       verifiedBy: "jerry.rausk@gmail.com",
@@ -54,6 +58,8 @@ export const useInvestmentStore = defineStore('investments', () => {
     },
     {
       id: "guid3",
+      userId: "Jerry.Rausk@gmail.com",
+      leagueId: "LeagueGuid",
       date: "2023-12-26",
       verified: true,
       verifiedBy: "jerry.rausk@gmail.com",

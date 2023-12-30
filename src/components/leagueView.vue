@@ -2,17 +2,15 @@
 import InvestmentCard from "@/components/InvestmentCard.vue";
 import InvestmentForm from "./forms/InvestmentForm.vue";
 import { useInvestmentStore } from "../stores/InvestmentStore.js";
-import { Investment } from "@/models/investments";
 import { onMounted, ref } from "vue";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth0 } from '@auth0/auth0-vue';
+const { user } = useAuth0();
+
 const investmentStore = useInvestmentStore();
 const loading = ref(true);
-async function addInvestment(investment: Investment) {
-    const res = await investmentStore.addInvestment(investment);
-    if (!res) {
-        console.error("Show banner of failed investment")
-    }
-}
+
+
 onMounted(async () => {
     await investmentStore.refreshInvestments();
     loading.value = false;
@@ -37,7 +35,7 @@ const people = [
 ]
 </script>
 <template>
-    <div class="px-2">
+    <div class="px-2" v-if="user && user.email">
         <div>
             <div v-for="p of people">
                 <h3>{{ p.name }}</h3>
@@ -64,7 +62,10 @@ const people = [
                 <InvestmentCard v-for="investment in investmentStore.investments" :investment="investment" />
             </div>
             <!-- Investment form -->
-            <InvestmentForm @new-investment="addInvestment" />
+            <InvestmentForm :user-email="user.email" league-id="LeagueGuid" />
         </div>
+    </div>
+    <div class="m-auto" v-else>
+        Could not read user email, please loug out and then log in again.
     </div>
 </template>

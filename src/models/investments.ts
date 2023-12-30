@@ -18,6 +18,8 @@ export type BetInvestment = {
 }
 export type Investment = {
   id: string,
+  userId: string,
+  leagueId: string,
   date: string,
   verified: boolean,
   verifiedBy: string | null

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { ref } from "vue";
@@ -8,19 +7,29 @@ import { cn } from "@/lib/utils"
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
-import { Investment, InvestmentTypes } from '@/models/investments';
+import { InvestmentTypes } from '@/models/investments';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useInvestmentStore } from "@/stores/InvestmentStore";
 
-const emits = defineEmits<{
-    (e: "newInvestment", investment: Investment): void;
+const investmentStore = useInvestmentStore();
+
+const props = defineProps<{
+    userEmail: string,
+    leagueId: string
 }>();
+
 const investmentType = ref("stock");
 const investmentDate = ref(new Date().toLocaleDateString("sv-SE"));
+const open = ref(false);
+
 function handleStockInvestment(buyPosition: boolean, ticker: string, amount: number, price: number) {
-    emits("newInvestment", {
+    investmentStore.addInvestment({
         id: "",
-        date: investmentDate.value, 
-        verified: false, 
-        verifiedBy: null, 
+        userId: props.userEmail,
+        leagueId: props.leagueId,
+        date: investmentDate.value,
+        verified: false,
+        verifiedBy: null,
         data: {
             type: InvestmentTypes.Stock,
             amount,
@@ -28,16 +37,21 @@ function handleStockInvestment(buyPosition: boolean, ticker: string, amount: num
             buyPosition, ticker
         }
     });
+    open.value = false;
 }
+
 </script>
 
 <template>
-    <Card class="max-w-[360px] mx-auto mt-4">
-        <CardHeader>
-            <CardTitle>Add transaction</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div class="flex row justify-between gap-10">
+    <Dialog v-model:open="open">
+        <DialogTrigger>
+            <Button class="text-xl" variant="ghost">+</Button>
+        </DialogTrigger>
+        <DialogContent class="max-w-[95%] rounded" aria-describedby="undefined">
+            <DialogHeader>
+                <DialogTitle>Add investment</DialogTitle>
+            </DialogHeader>
+            <div class="max-w-[310px] mx-auto mt-4 flex justify-between gap-10">
                 <Select v-model="investmentType">
                     <SelectTrigger>
                         <SelectValue placeholder="Type of transaction" />
@@ -66,10 +80,7 @@ function handleStockInvestment(buyPosition: boolean, ticker: string, amount: num
                     </PopoverContent>
                 </Popover>
             </div>
-            <StockSubForm v-if="investmentType === 'stock'" @form-submit="handleStockInvestment" />
-        </CardContent>
-        <CardFooter>
-        </CardFooter>
-
-    </Card>
+            <StockSubForm v-if="investmentType === 'stock'" @form-submit="handleStockInvestment" @cancel="open = false" />
+        </DialogContent>
+    </Dialog>
 </template>
