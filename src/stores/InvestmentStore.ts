@@ -1,76 +1,35 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { BetInvestment, Investment, InvestmentTypes, StockInvestment } from "../models/investments.js"
+import { Investment, BetInvestment, InvestmentTypes, StockInvestment } from "@/types/investments.js"
+import { postJson } from "@/src/services/apiService.js";
+
 
 export const useInvestmentStore = defineStore('investments', () => {
   const cash = ref();
-  const holdings = ref<(StockInvestment | BetInvestment)[]>([
-
-  ])
-  const investments = ref<Investment[]>([
-
-  ]);
+  const holdings = ref<(StockInvestment | BetInvestment)[]>([])
+  const investments = ref<Investment[]>([]);
 
   async function addInvestment(investment: Investment) {
-    //call api
-    //if fail return false
-    //else
+    const res = await postJson<Investment, any>("addInvestment", investment);
+    if(!res.success) {
+      return false
+    }
+    console.log(res.data);
     investments.value.push(investment)
     return true;
   }
 
-  async function refreshInvestments() {
+  async function refreshInvestments(leagueId: string) {
     investments.value = []
     holdings.value = []
     cash.value = 0;
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    //call api
-    investments.value = [{
-      id: "guid1",
-      userId: "Jerry.Rausk@gmail.com",
-      leagueId: "LeagueGuid",
-      date: "2023-12-26",
-      verified: false,
-      verifiedBy: null,
-      data: {
-        type: InvestmentTypes.Stock,
-        buyPosition: true,
-        ticker: "VOLV-B",
-        price: 13,
-        amount: 44
-      }
-    },
-    {
-      id: "guid2",
-      userId: "Jerry.Rausk@gmail.com",
-      leagueId: "LeagueGuid",
-      date: "2023-12-26",
-      verified: true,
-      verifiedBy: "jerry.rausk@gmail.com",
-      data: {
-        type: InvestmentTypes.Stock,
-        buyPosition: false,
-        ticker: "VOLV-B",
-        price: 15,
-        amount: 40
-      }
-    },
-    {
-      id: "guid3",
-      userId: "Jerry.Rausk@gmail.com",
-      leagueId: "LeagueGuid",
-      date: "2023-12-26",
-      verified: true,
-      verifiedBy: "jerry.rausk@gmail.com",
-      data: {
-        type: InvestmentTypes.Bet,
-        odds: 3.5,
-        amount: 44,
-        expiryDate: "2023-12-30"
-      }
-    },]
-
+    
+    const res = await postJson<any, Investment[]>("getInvestments", {leagueId})
+    if(!res.success) {
+      console.error("Ultra error not good when fetching investments");
+      return false;
+    }
+    investments.value = res.data;
     holdings.value = [
       {
         type: InvestmentTypes.Stock,

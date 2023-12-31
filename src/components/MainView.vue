@@ -1,4 +1,17 @@
 <script setup lang="ts">
+import { InvestmentTypes } from '@/types/investments.js';
+import { useInvestmentStore } from '@/src/stores/InvestmentStore';
+import { useLeagueStore } from '@/src/stores/LeagueStore';
+import { watch } from 'vue';
+
+const investmentStore = useInvestmentStore();
+const leagueStore = useLeagueStore();
+watch(() => leagueStore.activeLeague, () => {
+  console.log("Watch active league triggered")
+  if(leagueStore.activeLeague){
+    investmentStore.refreshInvestments(leagueStore.activeLeague!.id)
+  }
+}, {immediate: true})
 </script>
 
 <template>
@@ -33,14 +46,27 @@
         </ul>
       </div>
     </div>
-    <div class="flex flex-col border rounded py-2 px-8">
+    <div class="flex flex-col border rounded p-2">
       <h4>Activities</h4>
-      <ul class="text-sm list-disc list-outside">
+      <ul class="text-sm list-disc list-outside px-6">
         <li class="mt-1">Richard Persson verified Oskar Söderbom sold 2 FING-B at 0,13</li>
         <li class="mt-1">Oskar Söderbom sold 2 FING-B at 0,13</li>
         <li class="mt-1">Jerry Rausk settled bet with win 999</li>
         <li class="mt-2 text-blue-600">> See all activities for Meatheads 2024</li>
       </ul>
+    </div>
+    <div class="flex flex-col border rounded p-2">
+      <div class="flex flex-row justify-between">
+        <h4>Holdings</h4>
+        <p class="text-sm">Cash: 333</p>
+      </div>
+      <hr class="my-2">
+      <div class="flex flex-row gap-2">
+        <div v-for="i in investmentStore.investments" class="flex flex-col border rounded p-1 align-middle justify-center text-center">
+          <p>{{ i.data.type === InvestmentTypes.Stock ? i.data.ticker : "BET" }}</p>
+          <p class="text-xs mt-2">{{ i.data.amount }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>

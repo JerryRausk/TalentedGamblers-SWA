@@ -4,7 +4,7 @@ import {
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/src/components/ui/tooltip'
 defineProps<{ text: string, tooltip: string }>();
 </script>
 <template>

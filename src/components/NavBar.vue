@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useAuth0 } from '@auth0/auth0-vue';
 import { RouterLink } from "vue-router";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu'
-import { Button } from "@/components/ui/button"
-import {useLeagueStore} from "@/stores/LeagueStore"
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '@/src/components/ui/navigation-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/src/components/ui/dropdown-menu'
+import { Button } from "@/src/components/ui/button"
+import {useLeagueStore} from "@/src/stores/LeagueStore"
 import InvestMentForm from './forms/InvestmentForm.vue';
 import { onMounted, ref } from 'vue';
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/src/components/ui/skeleton";
 
 const leagueStore = useLeagueStore();
 const leagueLoading = ref(true);
@@ -36,8 +36,9 @@ onMounted(async () => {
         </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>
-    <div v-if="isAuthenticated && user && user.email && leagueStore.activeLeague && !leagueLoading">
-      <DropdownMenu class="border boder-solid border-1 border-red-400">
+    <div v-if="isAuthenticated && user && user.email && leagueStore.activeLeague">
+      <div v-if="!leagueLoading">
+        <DropdownMenu class="border boder-solid border-1 border-red-400">
         <DropdownMenuTrigger>
           ▾ {{ leagueStore.activeLeague.name }}
         </DropdownMenuTrigger>
@@ -63,10 +64,12 @@ onMounted(async () => {
         </DropdownMenuContent>
       </DropdownMenu>
       <InvestMentForm :user-email="user.email" :league-id="leagueStore.activeLeague.id" />
-    </div>
-    <div v-else>
+      </div>
+      <div v-else>
       <Skeleton class="w-[150px] h-[25px] rounded" />
     </div>
+    </div>
+   
 
     <NavigationMenuList >
       <NavigationMenuItem v-if="!isAuthenticated">

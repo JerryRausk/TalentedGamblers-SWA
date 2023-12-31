@@ -1,5 +1,5 @@
-import { Container, CosmosClient } from "@azure/cosmos";
-import { ItemType, itemTypes } from "../itemTypes";
+import { CosmosClient } from "@azure/cosmos";
+import { ItemType, itemTypes } from "../types/dbTypes.js";
 const DBNAME = process.env.CosmosDBName;
 const CONTAINERNAME = process.env.CosmosContainerName;
 

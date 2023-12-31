@@ -5,7 +5,7 @@ import {
   type NavigationMenuContentProps,
   useEmitAsProps,
 } from 'radix-vue'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 const props = defineProps<NavigationMenuContentProps & { class?: string }>()
 

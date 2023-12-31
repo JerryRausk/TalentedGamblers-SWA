@@ -15,7 +15,7 @@ export interface ToastProps extends ToastRootProps {
 import { ToastRoot, useEmitAsProps } from 'radix-vue'
 
 import { toastVariants } from '.'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 const props = defineProps<ToastProps>()
 const emits = defineEmits<ToastRootEmits>()

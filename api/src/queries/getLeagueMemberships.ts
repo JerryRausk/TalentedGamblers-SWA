@@ -1,6 +1,6 @@
-import { itemTypes } from "../itemTypes";
+import { itemTypes } from "../types/dbTypes.js";
 import { getContainer, stripMetaFromResource } from "../services/cosmosService";
-import { LeagueMembership } from "../itemTypes";
+import { LeagueMembership } from "../types/league.js";
 
 export async function getLeagueMemberships(userId: string) {
     const container = await getContainer();

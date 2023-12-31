@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { InvestmentTypes, Investment } from "../models/investments.js";
+import { Card, CardFooter, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { InvestmentTypes, Investment } from "@/types/investments.js";
 defineProps<{
   investment: Investment
 }>();

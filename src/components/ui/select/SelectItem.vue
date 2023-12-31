@@ -6,7 +6,7 @@ import {
   SelectItemText,
 } from 'radix-vue'
 import { Check } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 const props = defineProps<SelectItemProps & { class?: string }>()
 </script>

@@ -1,7 +1,7 @@
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { CosmosClient } from "@azure/cosmos";
 import { getItemOrNullById } from "../services/cosmosService.js"
-import { itemTypes } from "../itemTypes.js";
+import { itemTypes } from "../types/dbTypes.js";
 const TOKENHEADERNAME = "X-App-Authorization";
 const DBNAME = process.env.CosmosDBName;
 const CONTAINERNAME = process.env.CosmosContainerName;

@@ -8,7 +8,7 @@ export const FORM_ITEM_INJECTION_KEY
 <script lang="ts" setup>
 import { provide, useAttrs } from 'vue'
 import { useId } from 'radix-vue'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 defineOptions({
   inheritAttrs: false,

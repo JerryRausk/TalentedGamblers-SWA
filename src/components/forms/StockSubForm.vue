@@ -2,10 +2,10 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import SwitchNoOff from '@/components/ui/switch/SwitchNoOff.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/components/ui/form'
+import SwitchNoOff from '@/src/components/ui/switch/SwitchNoOff.vue'
+import { Button } from '@/src/components/ui/button'
+import { Input } from '@/src/components/ui/input'
 
 const emits = defineEmits<{
     (e: "formSubmit", buyPosition: boolean, ticker: string, amount: number, price: number): void

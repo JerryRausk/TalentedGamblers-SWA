@@ -1,6 +1,6 @@
-import { auth0 } from '@/auth0';
+import { auth0 } from '@/src/auth0';
 
-type Endpoint = "getLeagues" | "addInvestment" | "testauth"
+type Endpoint = "getLeagues" | "addInvestment" | "testauth" | "getInvestments"
 export async function postJson<Tin, Tout>(endpoint: Endpoint, data: Tin) {
     try
     {

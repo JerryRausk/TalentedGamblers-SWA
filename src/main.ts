@@ -12,7 +12,7 @@ import {auth0} from "./auth0.js"
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Landing },
-  { path: '/main', component: MainView },
+  { path: '/main', component: MainView, beforeEnter: authGuard },
   { path: '/profile', component: ProfileView, beforeEnter: authGuard },
   { path: '/league', component: LeagueView, beforeEnter: authGuard }
 ]

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuth0 } from '@auth0/auth0-vue';
-import { Button } from "@/components/ui/button";
-import { useToast } from '@/components/ui/toast/use-toast'
+import { Button } from "@/src/components/ui/button";
+import { useToast } from '@/src/components/ui/toast/use-toast'
 import { getText, getJson } from "../services/apiService"
 
 const { user } = useAuth0();

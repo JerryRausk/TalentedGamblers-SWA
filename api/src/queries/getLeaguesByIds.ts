@@ -1,5 +1,6 @@
 import { SqlQuerySpec } from "@azure/cosmos";
-import { itemTypes, League } from "../itemTypes";
+import { itemTypes } from "../types/dbTypes.js";
+import { League } from "../types/league.js";
 import { getContainer, stripMetaFromResource } from "../services/cosmosService";
 export async function getLeaguesByIds(leagueIds: string[]) {
     const q = {

@@ -6,6 +6,12 @@
     "rootDir": ".",
     "sourceMap": true,
     "strict": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "composite": true
+  },
+  "include": ["./src/**/*.ts"],
+  "paths": {
+    "@/*": ["./src/*"],
+    "types/*": ["./src/types/*"]
   }
 }

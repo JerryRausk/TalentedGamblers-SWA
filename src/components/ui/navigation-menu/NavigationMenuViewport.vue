@@ -3,7 +3,7 @@ import {
   NavigationMenuViewport,
   type NavigationMenuViewportProps,
 } from 'radix-vue'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 const props = defineProps<NavigationMenuViewportProps>()
 </script>

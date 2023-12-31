@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import InvestmentCard from "@/components/InvestmentCard.vue";
+import InvestmentCard from "@/src/components/InvestmentCard.vue";
 import InvestmentForm from "./forms/InvestmentForm.vue";
 import { useInvestmentStore } from "../stores/InvestmentStore.js";
-import { onMounted, ref } from "vue";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useLeagueStore } from "@/src/stores/LeagueStore";
+import { watch, ref } from "vue";
+import { Skeleton } from "@/src/components/ui/skeleton";
 import { useAuth0 } from '@auth0/auth0-vue';
+
 const { user } = useAuth0();
 
 const investmentStore = useInvestmentStore();
+const leagueStore = useLeagueStore();
 const loading = ref(true);
 
 
-onMounted(async () => {
-    await investmentStore.refreshInvestments();
-    loading.value = false;
-})
+watch(() => leagueStore.activeLeague, () => {
+  console.log("Watch active league triggered")
+  if(leagueStore.activeLeague){
+    investmentStore.refreshInvestments(leagueStore.activeLeague!.id)
+  }
+}, {immediate: true})
 
 const people = [
     {

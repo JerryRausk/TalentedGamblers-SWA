@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 //import { getJson } from "@/services/apiService.js"
-import { League } from "@/models/league.js";
-import { getJson } from "@/services/apiService";
+import { League } from "@/types/league.js";
+import { getJson } from "@/src/services/apiService";
 export const useLeagueStore = defineStore('league', () => {
   const activeLeague = ref<League>();
   const availableLeageus = ref<League[]>();

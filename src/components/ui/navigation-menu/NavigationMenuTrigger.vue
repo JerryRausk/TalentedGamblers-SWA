@@ -5,7 +5,7 @@ import {
 } from 'radix-vue'
 import { ChevronDown } from 'lucide-vue-next'
 import { navigationMenuTriggerStyle } from '.'
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 const props = defineProps<NavigationMenuTriggerProps & { class?: string }>()
 </script>

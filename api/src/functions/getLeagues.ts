@@ -1,10 +1,10 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { addMiddleWares } from "../middleware/middlewares.js";
 import { User } from "@auth0/auth0-vue";
-import { LeagueMembership } from "../itemTypes.js";
+import { LeagueMembership } from "../types/league.js";
 import { getLeaguesByIds } from "../queries/getLeaguesByIds.js";
-async function callHandler(request: HttpRequest, context: InvocationContext, user: User, LeagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
-    const res = await getLeaguesByIds(LeagueMemberships.map(l => l.leagueId))
+async function callHandler(_: HttpRequest, __: InvocationContext, ___: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
+    const res = await getLeaguesByIds(leagueMemberships.map(l => l.leagueId))
     return { jsonBody: res };
 }
 

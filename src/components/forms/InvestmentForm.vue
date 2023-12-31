@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
+import { Button } from '@/src/components/ui/button'
 import { ref } from "vue";
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { cn } from "@/lib/utils"
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from "@/src/lib/utils"
+import { Calendar } from '@/src/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
-import { InvestmentTypes } from '@/models/investments';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useInvestmentStore } from "@/stores/InvestmentStore";
+import { InvestmentTypes } from '@/types/investments';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog'
+import { useInvestmentStore } from "@/src/stores/InvestmentStore";
 
 const investmentStore = useInvestmentStore();
 
