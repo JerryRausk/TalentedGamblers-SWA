@@ -7,7 +7,7 @@
     "dev": "vite",
     "serve": "vite --port 8080",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --port 8080"
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.3",

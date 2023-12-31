@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/src': path.resolve(__dirname, './src'),
-      "@/types": path.resolve(__dirname, "./api/src/types")
+      "@/types": path.resolve(__dirname, "./apisrc/src/types")
     },
   },
   build: {

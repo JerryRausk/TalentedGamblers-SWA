@@ -23,7 +23,7 @@ watch(() => leagueStore.activeLeague, () => {
 
 const people = [
     {
-        name: "Jerry Rausk",
+        name: "Jerry RausSk",
         cash: 500,
         invested: 790
     },
