@@ -59,15 +59,15 @@ console.log(form.values)
   <form @submit="onSubmit">
     <FormField v-slot="{ value, handleChange }" name="buyPosition">
       <FormItem class="mt-4">
-        <div class="flex row gap-4">
+        <div class="flex row gap-4 justify-center">
           <FormLabel>
-            <p :class="value ? 'text-muted-foreground' : 'underline'">Sell</p>
+            <p class="text-base" :class="value ? 'text-muted-foreground' : 'underline'">Sell</p>
           </FormLabel>
           <FormControl>
             <SwitchNoOff :checked="value" @update:checked="handleChange" />
           </FormControl>
           <FormLabel>
-            <p :class="value ? '' : 'text-muted-foreground'">
+            <p class="text-base" :class="value ? '' : 'text-muted-foreground'">
               <span :class="value ? 'underline' : ''">Buy</span>
               <span class="text-xs ml-2">( {{ holdings.cashHoldings.toLocaleString() }} available )</span>
             </p>
@@ -81,7 +81,7 @@ console.log(form.values)
       <FormItem class="mt-4 w-auto">
         <FormLabel>Ticker</FormLabel>
         <FormControl>
-          <Input v-if="form.values.buyPosition === true" placeholder="APL, VOLV-B, FING-B, etc..."
+          <Input class="text-base" v-if="form.values.buyPosition === true" placeholder="APL, VOLV-B, FING-B, etc..."
             v-bind.string="componentField" />
           <Select v-else v-bind="componentField">
             <SelectTrigger>
@@ -102,7 +102,7 @@ console.log(form.values)
       <FormItem class="mt-4">
         <FormLabel>Amount</FormLabel>
         <FormControl>
-          <Input type="number" placeholder="Number of stocks traded" v-bind="componentField" />
+          <Input class="text-base" type="number" placeholder="Number of stocks traded" v-bind="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
@@ -112,17 +112,17 @@ console.log(form.values)
       <FormItem class="mt-4">
         <FormLabel>Price</FormLabel>
         <FormControl>
-          <Input step="0.01" type="number" placeholder="Traded price" v-bind.number="componentField" />
+          <Input class="text-base" step="0.01" type="number" placeholder="Traded price" v-bind.number="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
 
     <div class="flex flex-row justify-between mt-8">
-      <Button class=" bg-green-200" type="submit">
+      <Button class="font-bold bg-green-200" type="submit">
         Add
       </Button>
-      <Button variant="outline" @click="emits('cancel')">
+      <Button class="font-bold" variant="outline" @click="emits('cancel')">
         Cancel
       </Button>
     </div>

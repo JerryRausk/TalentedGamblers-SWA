@@ -56,14 +56,14 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
         </DialogTrigger>
         <DialogContent class="max-w-[90%] rounded flex flex-col">
             <DialogHeader>
-                <DialogTitle>Add investment</DialogTitle>
+                <DialogTitle class="text-2xl">Add investment</DialogTitle>
                 <DialogDescription>
                     {{ league.name }}
                 </DialogDescription>
             </DialogHeader>
             <div aria-describedby="Investment form" class="mx-auto mt-4 flex justify-between w-full">
                 <Select v-model="investmentType">
-                    <SelectTrigger class="w-32">
+                    <SelectTrigger class="w-32 text-base">
                         <SelectValue placeholder="Type of investment" />
                     </SelectTrigger>
                     <SelectContent>
@@ -77,7 +77,7 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
                 </Select>
                 <Popover>
                     <PopoverTrigger as-child>
-                        <Button :variant="'outline'" :class="cn(
+                        <Button class="text-base" :variant="'outline'" :class="cn(
                             'justify-start text-left font-normal',
                             !investmentDate && 'text-muted-foreground',
                         )">
