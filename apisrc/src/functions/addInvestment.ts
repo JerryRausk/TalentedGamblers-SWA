@@ -22,7 +22,7 @@ async function callHandler(request: HttpRequest, _: InvocationContext, user: Use
     
     const invWithId = {...inv, id: randomUUID()}
 
-    console.log(`Adding investment: ${JSON.stringify(invWithId)}`)
+    // TODO: impl backend validation when buying / selling stocks.
     const addInvSuccess = await addInvestmentCommand(invWithId)
     if(!addInvSuccess) return { status: 500, jsonBody: {}}
     const holdingsAfterInvestment = await getHoldingsByUserAndLeague(invWithId.userId, invWithId.leagueId);

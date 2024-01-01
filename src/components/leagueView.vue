@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import InvestmentCard from "@/src/components/InvestmentCard.vue";
-import InvestmentForm from "./forms/InvestmentForm.vue";
 import { useInvestmentStore } from "../stores/InvestmentStore.js";
 import { useLeagueStore } from "@/src/stores/LeagueStore";
 import { watch, ref } from "vue";
@@ -67,7 +66,6 @@ const people = [
                 <InvestmentCard v-for="investment in investmentStore.investments" :investment="investment" />
             </div>
             <!-- Investment form -->
-            <InvestmentForm :user-email="user.email" league-id="LeagueGuid" />
         </div>
     </div>
     <div class="m-auto" v-else>
