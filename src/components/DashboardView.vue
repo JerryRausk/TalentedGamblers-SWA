@@ -59,7 +59,7 @@ watch(() => leagueStore.activeLeague, async () => {
     <div v-if="investmentStore.holdings && !holdingsLoading" class="flex flex-col border rounded p-2">
       <div class="flex flex-row justify-between">
         <h4>Stock Holdings</h4>
-        <p class="text-sm">Cash: {{ investmentStore.holdings.cashHoldings }}</p>
+        <p class="text-sm">Cash: {{ investmentStore.holdings.cashHoldings.toLocaleString() }}</p>
       </div>
       <hr class="my-2">
       <div class="flex flex-row gap-2 flex-wrap">

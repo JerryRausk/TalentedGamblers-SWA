@@ -11,14 +11,16 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 
 const leagueStore = useLeagueStore();
 const leagueLoading = ref(true);
-const { logout, loginWithPopup } = useAuth0();
+const { logout, loginWithPopup, user, isAuthenticated } = useAuth0();
+
 function logoutUser() {
   logout({ logoutParams: { returnTo: window.location.origin } });
 }
+
 function login() {
   loginWithPopup();
 }
-const { user, isAuthenticated } = useAuth0();
+
 onMounted(async () => {
   await leagueStore.refreshLeagues();
   leagueLoading.value = false;
@@ -96,16 +98,16 @@ onMounted(async () => {
             </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/" >
                   Dashboard
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/" >
                   Leaderboard
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/" >
                   Verifications
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/main" >
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/" >
                   Activities
             </DropdownMenuItem>
             
