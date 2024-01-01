@@ -8,25 +8,27 @@ import { Calendar } from '@/src/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
 import { InvestmentTypes } from '@/types/investments';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/src/components/ui/dialog'
 import { useInvestmentStore } from "@/src/stores/InvestmentStore";
+import { League } from "@/types/league"
+import { useToast } from '@/src/components/ui/toast/use-toast'
 
 const investmentStore = useInvestmentStore();
-
+const {toast} = useToast();
 const props = defineProps<{
     userEmail: string,
-    leagueId: string
+    league: League
 }>();
 
 const investmentType = ref("stock");
 const investmentDate = ref(new Date().toLocaleDateString("sv-SE"));
 const open = ref(false);
 
-function handleStockInvestment(buyPosition: boolean, ticker: string, amount: number, price: number) {
-    investmentStore.addInvestment({
+async function handleStockInvestment(buyPosition: boolean, ticker: string, amount: number, price: number) {
+    const invRes = await investmentStore.addInvestment({
         id: "",
         userId: props.userEmail,
-        leagueId: props.leagueId,
+        leagueId: props.league.id,
         date: investmentDate.value,
         verified: false,
         verifiedBy: null,
@@ -37,24 +39,32 @@ function handleStockInvestment(buyPosition: boolean, ticker: string, amount: num
             buyPosition, ticker
         }
     });
-    open.value = false;
+    if(!invRes) {
+        toast({title: "Failed to submit new investment", description: "Try again or try something else", variant: "destructive"})
+    } else {
+        open.value = false;
+    }
+    
 }
 
 </script>
 
 <template>
-    <Dialog v-model:open="open">
+    <Dialog  v-model:open="open">
         <DialogTrigger>
             <Button class="text-xl" variant="ghost">+</Button>
         </DialogTrigger>
-        <DialogContent class="max-w-[95%] rounded" aria-describedby="undefined">
+        <DialogContent class="max-w-[90%] rounded flex flex-col">
             <DialogHeader>
                 <DialogTitle>Add investment</DialogTitle>
+                <DialogDescription>
+                    {{ league.name }}
+                </DialogDescription>
             </DialogHeader>
-            <div class="max-w-[310px] mx-auto mt-4 flex justify-between gap-10">
+            <div aria-describedby="Investment form" class="mx-auto mt-4 flex justify-between w-full">
                 <Select v-model="investmentType">
-                    <SelectTrigger>
-                        <SelectValue placeholder="Type of transaction" />
+                    <SelectTrigger class="w-32">
+                        <SelectValue placeholder="Type of investment" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="stock">
@@ -68,7 +78,7 @@ function handleStockInvestment(buyPosition: boolean, ticker: string, amount: num
                 <Popover>
                     <PopoverTrigger as-child>
                         <Button :variant="'outline'" :class="cn(
-                            'w-[280px] justify-start text-left font-normal',
+                            'justify-start text-left font-normal',
                             !investmentDate && 'text-muted-foreground',
                         )">
                             <CalendarIcon class="mr-2 h-4 w-4" />
@@ -80,7 +90,7 @@ function handleStockInvestment(buyPosition: boolean, ticker: string, amount: num
                     </PopoverContent>
                 </Popover>
             </div>
-            <StockSubForm v-if="investmentType === 'stock'" @form-submit="handleStockInvestment" @cancel="open = false" />
+            <StockSubForm v-if="investmentType === 'stock' && investmentStore.holdings" :holdings="investmentStore.holdings"  @form-submit="handleStockInvestment" @cancel="open = false" />
         </DialogContent>
     </Dialog>
 </template>
