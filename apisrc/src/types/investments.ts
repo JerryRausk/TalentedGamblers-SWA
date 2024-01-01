@@ -26,6 +26,17 @@ export type Investment = {
   data: StockInvestment | BetInvestment
 }
 export type AddInvestmentDTO = {
-    investment: Investment,
-    cashHoldingsAfterInvestment: number
+    addedInvestment: Investment,
+    holdingsAfterInvestment: Holdings
+}
+export type StockHolding = {
+        ticker: string,
+        heldAmount: number,
+}
+
+export type Holdings = {
+    userId: string,
+    leagueId: string,
+    stockHoldings: StockHolding[],
+    cashHoldings: number
 }

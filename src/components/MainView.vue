@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { InvestmentTypes } from '@/types/investments.js';
 import { useInvestmentStore } from '@/src/stores/InvestmentStore';
 import { useLeagueStore } from '@/src/stores/LeagueStore';
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
+import { Skeleton } from "@/src/components/ui/skeleton";
 
 const investmentStore = useInvestmentStore();
 const leagueStore = useLeagueStore();
-watch(() => leagueStore.activeLeague, () => {
-  console.log("Watch active league triggered")
-  if(leagueStore.activeLeague){
-    investmentStore.refreshInvestments(leagueStore.activeLeague!.id)
+const holdingsLoading = ref(true);
+watch(() => leagueStore.activeLeague, async () => {
+  if (leagueStore.activeLeague) {
+    await investmentStore.refreshHoldings(leagueStore.activeLeague!.id);
+    holdingsLoading.value = false;
   }
-}, {immediate: true})
+}, { immediate: true })
 </script>
 
 <template>
@@ -55,17 +56,30 @@ watch(() => leagueStore.activeLeague, () => {
         <li class="mt-2 text-blue-600">> See all activities for Meatheads 2024</li>
       </ul>
     </div>
-    <div class="flex flex-col border rounded p-2">
+    <div v-if="investmentStore.holdings && !holdingsLoading" class="flex flex-col border rounded p-2">
       <div class="flex flex-row justify-between">
-        <h4>Holdings</h4>
-        <p class="text-sm">Cash: 333</p>
+        <h4>Stock Holdings</h4>
+        <p class="text-sm">Cash: {{ investmentStore.holdings.cashHoldings }}</p>
       </div>
       <hr class="my-2">
-      <div class="flex flex-row gap-2">
-        <div v-for="i in investmentStore.investments" class="flex flex-col border rounded p-1 align-middle justify-center text-center">
-          <p>{{ i.data.type === InvestmentTypes.Stock ? i.data.ticker : "BET" }}</p>
-          <p class="text-xs mt-2">{{ i.data.amount }}</p>
+      <div class="flex flex-row gap-2 flex-wrap">
+        <div v-for="h in investmentStore.holdings.stockHoldings"
+          class="flex flex-col border rounded p-1 align-middle justify-center text-center min-w-14">
+          <p>{{ h.ticker }}</p>
+          <p class="text-xs mt-2">{{ h.heldAmount }}</p>
         </div>
+      </div>
+    </div>
+    <div v-else class="flex flex-col border rounded p-2">
+      <div class="flex flex-row justify-between">
+        <h4>Stock Holdings</h4>
+        <Skeleton class="w-20 h-6 rounded" />
+      </div>
+      <hr class="my-2">
+      <div class="flex flex-row gap-2 flex-wrap">
+        <Skeleton class="w-14 h-14 rounded" />
+        <Skeleton class="w-14 h-14 rounded" />
+        <Skeleton class="w-14 h-14 rounded" />
       </div>
     </div>
   </div>
@@ -94,4 +108,5 @@ td {
   height: 3rem;
   width: 3rem;
   border-radius: 100%;
-}</style>
+}
+</style>
