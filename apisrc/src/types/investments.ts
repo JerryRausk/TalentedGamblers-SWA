@@ -25,10 +25,12 @@ export type Investment = {
   verifiedBy: string | null
   data: StockInvestment | BetInvestment
 }
+
 export type AddInvestmentDTO = {
     addedInvestment: Investment,
     holdingsAfterInvestment: Holdings
 }
+
 export type StockHolding = {
         ticker: string,
         heldAmount: number,
@@ -39,4 +41,9 @@ export type Holdings = {
     leagueId: string,
     stockHoldings: StockHolding[],
     cashHoldings: number
+}
+
+export type LeagueInvestmentsDTO = {
+    investments: Investment[],
+    holdings: Holdings[]
 }

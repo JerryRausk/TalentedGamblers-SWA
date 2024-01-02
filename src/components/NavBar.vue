@@ -109,8 +109,8 @@ onMounted(async () => {
             <DropdownMenuItem v-if="userStore.isSiteAdmin" class="cursor-pointer h-12" :as="RouterLink" to="/leagueAdmin">
               League Admin
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
-              Verifications
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/leagueInvestments">
+              League Investments
             </DropdownMenuItem>
             <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
               Activities

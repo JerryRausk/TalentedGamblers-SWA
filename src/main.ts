@@ -9,12 +9,15 @@ import LeagueAdminView from './views/leagueAdminView.vue';
 import { createPinia } from 'pinia'
 import {auth0} from "./auth0.js"
 import siteAdminView from './views/siteAdminView.vue';
+import leagueInvestmentView from "./views/leagueInvestmentsView.vue"
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: DashboardView },
   { path: '/profile', component: ProfileView, beforeEnter: authGuard },
   { path: '/leagueAdmin', component: LeagueAdminView, beforeEnter: authGuard },
-  { path: '/siteAdmin', component: siteAdminView, beforeEnter: authGuard }
+  { path: '/siteAdmin', component: siteAdminView, beforeEnter: authGuard },
+  { path: '/leagueInvestments', component: leagueInvestmentView, beforeEnter: authGuard }
+
 ]
 
 const router = createRouter({

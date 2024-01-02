@@ -2,7 +2,10 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { addMiddleWares } from "../middleware/middlewares.js";
 import { User } from "@auth0/auth0-vue";
 import { LeagueMembership } from "../types/league.js";
-import { getHoldingsByUserAndLeagueQuery } from "../queries/getHoldingsByUserAndLeagueQuery.js";
+import { getInvestmentsByUserAndLeagueQuery } from "../queries/getInvestmentsByUserAndLeagueQuery.js";
+import { calculateCashHoldingsForUser, calculateStockHoldingsForUser } from "../services/calculator.js";
+import { Holdings } from "../types/investments.js";
+
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const jsonReqBody = await request.json()
     const leagueId = jsonReqBody["leagueId"]
@@ -13,7 +16,13 @@ async function callHandler(request: HttpRequest, _: InvocationContext, user: Use
         return {status: 401, jsonBody: {success: false}}
     }
 
-    const holdings = await getHoldingsByUserAndLeagueQuery(user.email, leagueId);
+    const investments = await getInvestmentsByUserAndLeagueQuery(user.email, leagueId)
+    const holdings = {
+        userId: user.email,
+        leagueId: leagueId,
+        stockHoldings: await calculateStockHoldingsForUser(investments),
+        cashHoldings: await calculateCashHoldingsForUser(investments)
+    } satisfies Holdings;
 
     return { status: 201, jsonBody: holdings }
 }

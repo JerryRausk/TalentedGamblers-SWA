@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { Investment, AddInvestmentDTO, Holdings } from "@/types/investments.js"
+import { Investment, AddInvestmentDTO, Holdings, LeagueInvestmentsDTO } from "@/types/investments.js"
 import { postJson } from "@/src/services/apiService.js";
 
 
@@ -8,6 +8,7 @@ export const useInvestmentStore = defineStore('investments', () => {
   const holdings = ref<Holdings | null>(null)
   const investments = ref<Investment[]>([]);
   const leagueInvestments = ref<Investment[]>([]);
+  const leagueHoldings = ref<Holdings[] | null>(null)
 
   async function addInvestment(investment: Investment) {
     const res = await postJson<Investment, AddInvestmentDTO>("addInvestment", investment);
@@ -36,7 +37,7 @@ export const useInvestmentStore = defineStore('investments', () => {
   async function refreshLeagueInvestments(leagueId: string, latestN: number) {
     leagueInvestments.value = [];
 
-    const res = await postJson<any, Investment[]>("getLeagueInvestments", {
+    const res = await postJson<any, LeagueInvestmentsDTO>("getLeagueInvestments", {
       leagueId,
       latestN
     })
@@ -44,7 +45,8 @@ export const useInvestmentStore = defineStore('investments', () => {
       console.error("Ultra error not good when fetching league investments");
       return false;
     }
-    leagueInvestments.value = res.data;
+    leagueInvestments.value = res.data.investments;
+    leagueHoldings.value = res.data.holdings;
     return true;
   }
 
@@ -58,5 +60,5 @@ export const useInvestmentStore = defineStore('investments', () => {
     }
     holdings.value = res.data;
   }
-  return { investments, leagueInvestments, addInvestment, holdings, refreshInvestments, refreshHoldings, refreshLeagueInvestments }
+  return { investments, leagueInvestments, leagueHoldings, addInvestment, holdings, refreshInvestments, refreshHoldings, refreshLeagueInvestments }
 })

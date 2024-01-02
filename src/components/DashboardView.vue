@@ -1,51 +1,61 @@
 <script setup lang="ts">
 import { useInvestmentStore } from '@/src/stores/InvestmentStore';
 import { useLeagueStore } from '@/src/stores/LeagueStore';
-import { watch, ref, onMounted } from 'vue';
+import { watch, ref, computed } from 'vue';
 import { Skeleton } from "@/src/components/ui/skeleton";
+import InvestmentCard from "@/src/components/InvestmentCard.vue"
+import { RefreshCcwIcon } from "lucide-vue-next"
 
 const investmentStore = useInvestmentStore();
 const leagueStore = useLeagueStore();
 const holdingsLoading = ref(true);
+const investmentsLoading = ref(true);
 
 watch(() => leagueStore.activeLeague, async () => {
   if (leagueStore.activeLeague) {
     await investmentStore.refreshHoldings(leagueStore.activeLeague!.id);
-    await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 5);
     holdingsLoading.value = false;
+    if(investmentStore.leagueInvestments.length === 0)
+      await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 3);
+    investmentsLoading.value = false;
   }
 }, { immediate: true })
 
-onMounted(async () => {
-
+const latestInvestments = computed(() => {
+  if(!investmentStore.leagueInvestments) return []
+  return investmentStore.leagueInvestments.slice(0, 3)
 })
 </script>
 
 <template>
   <div class="flex flex-col p-2 gap-2">
+    <div class="flex flex-row justify-center">
+      <div class="w-4"></div>
+      <h1 class="text-center text-xl mb-2">Dashboard</h1>
+      <div class="w-4">
+      <RefreshCcwIcon class="w-4 justify-self-start ml-2"/>
+        </div>
+    </div>
     <div class="flex flex-row gap-4">
       <div class="flex flex-col w-fit min-w-44">
-        <div class="border-secondary border rounded p-2 text-sm gap-2 flex flex-col">
-          <div>
-            <p>1. Jerry Rausk</p>
-            <p class="text-xs text-muted-foreground">1103 (403💵 + 700💎)</p>
+        <div class="border-secondary border rounded p-2  gap-2 flex flex-col">
+          <div class="flex flex-row justify-between">
+            <h4>Leaderboard</h4>
+            
           </div>
-          <div>
-            <p>2. Oskar Söderbom</p>
-            <p class="text-xs text-muted-foreground">902 (300💵 + 602💎)</p>
+          
+          <div class="text-sm" v-for="lh in investmentStore.leagueHoldings">
+            <p>{{ lh.userId }}</p>
+            <p class="text-xs text-muted-foreground">{{ lh.cashHoldings.toLocaleString() }} + {{ lh.stockHoldings.length }} different stocks</p>
           </div>
-          <div>
-            <p>3. Richard Persson</p>
-            <p class="text-xs text-muted-foreground">340 (340💎)</p>
-          </div>
-          <div class="mt-2">
+          <div class="mt-2 text-sm">
             <p class="text-blue-600">
               > Go to leaderboard
             </p>
           </div>
         </div>
       </div>
-      <div class="flex flex-col border p-2 w-full h-fit rounded">
+      <div class="flex flex-col border p-2 w-full rounded">
         <h4>Waiting for you</h4>
         <ul class="text-sm text-blue-600">
           <li>7 verifications</li>
@@ -53,12 +63,14 @@ onMounted(async () => {
         </ul>
       </div>
     </div>
-    <div class="flex flex-col border rounded p-2">
-      <h4>Activities</h4>
-      <ul class="text-sm list-disc list-outside px-6">
-        <li v-for="li in investmentStore.leagueInvestments" class="mt-1">{{ li.userId }} {{ li.date }}</li>
-        <li class="mt-2 text-blue-600">> See all activities for Meatheads 2024</li>
-      </ul>
+    <div class="flex flex-col border rounded p-2 gap-2">
+      <h4>Investments</h4>
+      <div v-for="li in latestInvestments">
+        <InvestmentCard :investment="li" />
+      </div>
+      <div>
+        <a class="text-blue-600 text-sm">> Go to all investments</a>
+      </div>
     </div>
     <div v-if="investmentStore.holdings && !holdingsLoading" class="flex flex-col border rounded p-2">
       <div class="flex flex-row justify-between">

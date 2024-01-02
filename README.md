@@ -6,10 +6,6 @@
 
 ### Add feature to register bet investment
 
-### Add feature to get holdings of all users in league, display on dashboard
-
-### Add feature to see all activites, show latest on dashboard and create view for showing all
-
 ### Change investment model to ...needsVerification
 
 ### Impl. investment validation backend

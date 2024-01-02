@@ -4,8 +4,10 @@ import { User } from "@auth0/auth0-vue";
 import { LeagueMembership } from "../types/league.js";
 import { randomUUID } from "crypto";
 import { addInvestmentCommand  } from "../commands/addInvestmentCommand.js";
-import { AddInvestmentDTO, Investment } from "../types/investments.js";
-import { getHoldingsByUserAndLeagueQuery } from "../queries/getHoldingsByUserAndLeagueQuery.js";
+import { AddInvestmentDTO, Investment, Holdings } from "../types/investments.js";
+import { getInvestmentsByUserAndLeagueQuery } from "../queries/getInvestmentsByUserAndLeagueQuery.js";
+import { calculateStockHoldingsForUser, calculateCashHoldingsForUser } from "../services/calculator.js";
+
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const inv = await request.json() as Investment
 
@@ -25,10 +27,17 @@ async function callHandler(request: HttpRequest, _: InvocationContext, user: Use
     // TODO: impl backend validation when buying / selling stocks.
     const addInvSuccess = await addInvestmentCommand(invWithId)
     if(!addInvSuccess) return { status: 500, jsonBody: {}}
-    const holdingsAfterInvestment = await getHoldingsByUserAndLeagueQuery(invWithId.userId, invWithId.leagueId);
+    const investments = await getInvestmentsByUserAndLeagueQuery(user.email, invWithId.leagueId);
+    const holdings = {
+        userId: user.email,
+        leagueId: invWithId.leagueId,
+        stockHoldings: await calculateStockHoldingsForUser(investments),
+        cashHoldings: await calculateCashHoldingsForUser(investments)
+    } satisfies Holdings;
+    
     const jsonResponse = {
         addedInvestment: invWithId, 
-        holdingsAfterInvestment: holdingsAfterInvestment
+        holdingsAfterInvestment: holdings
     } satisfies AddInvestmentDTO
 
     return { status: 201, jsonBody: jsonResponse }
