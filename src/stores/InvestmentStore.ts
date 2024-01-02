@@ -7,6 +7,7 @@ import { postJson } from "@/src/services/apiService.js";
 export const useInvestmentStore = defineStore('investments', () => {
   const holdings = ref<Holdings | null>(null)
   const investments = ref<Investment[]>([]);
+  const leagueInvestments = ref<Investment[]>([]);
 
   async function addInvestment(investment: Investment) {
     const res = await postJson<Investment, AddInvestmentDTO>("addInvestment", investment);
@@ -29,7 +30,22 @@ export const useInvestmentStore = defineStore('investments', () => {
       return false;
     }
     investments.value = res.data;
+    return true;
+  }
 
+  async function refreshLeagueInvestments(leagueId: string, latestN: number) {
+    leagueInvestments.value = [];
+
+    const res = await postJson<any, Investment[]>("getLeagueInvestments", {
+      leagueId,
+      latestN
+    })
+    if(!res.success) {
+      console.error("Ultra error not good when fetching league investments");
+      return false;
+    }
+    leagueInvestments.value = res.data;
+    return true;
   }
 
   async function refreshHoldings(leagueId: string) {
@@ -42,5 +58,5 @@ export const useInvestmentStore = defineStore('investments', () => {
     }
     holdings.value = res.data;
   }
-  return { investments, addInvestment, holdings, refreshInvestments, refreshHoldings }
+  return { investments, leagueInvestments, addInvestment, holdings, refreshInvestments, refreshHoldings, refreshLeagueInvestments }
 })

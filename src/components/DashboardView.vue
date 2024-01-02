@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { useInvestmentStore } from '@/src/stores/InvestmentStore';
 import { useLeagueStore } from '@/src/stores/LeagueStore';
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import { Skeleton } from "@/src/components/ui/skeleton";
 
 const investmentStore = useInvestmentStore();
 const leagueStore = useLeagueStore();
 const holdingsLoading = ref(true);
+
 watch(() => leagueStore.activeLeague, async () => {
   if (leagueStore.activeLeague) {
     await investmentStore.refreshHoldings(leagueStore.activeLeague!.id);
+    await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 5);
     holdingsLoading.value = false;
   }
 }, { immediate: true })
+
+onMounted(async () => {
+
+})
 </script>
 
 <template>
@@ -50,9 +56,7 @@ watch(() => leagueStore.activeLeague, async () => {
     <div class="flex flex-col border rounded p-2">
       <h4>Activities</h4>
       <ul class="text-sm list-disc list-outside px-6">
-        <li class="mt-1">Richard Persson verified Oskar Söderbom sold 2 FING-B at 0,13</li>
-        <li class="mt-1">Oskar Söderbom sold 2 FING-B at 0,13</li>
-        <li class="mt-1">Jerry Rausk settled bet with win 999</li>
+        <li v-for="li in investmentStore.leagueInvestments" class="mt-1">{{ li.userId }} {{ li.date }}</li>
         <li class="mt-2 text-blue-600">> See all activities for Meatheads 2024</li>
       </ul>
     </div>

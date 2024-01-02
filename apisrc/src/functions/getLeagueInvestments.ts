@@ -2,28 +2,29 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { addMiddleWares } from "../middleware/middlewares.js";
 import { User } from "@auth0/auth0-vue";
 import { LeagueMembership } from "../types/league.js";
-import { getHoldingsByUserAndLeagueQuery } from "../queries/getHoldingsByUserAndLeagueQuery.js";
+import { getLeagueInvestmentsQuery } from "../queries/getLeagueInvestmentsQuery.js";
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const jsonReqBody = await request.json()
     const leagueId = jsonReqBody["leagueId"]
+    const latestN = jsonReqBody["latestN"]
 
     const leagueMembershipIds = leagueMemberships.map(l => l.leagueId)
     if(!leagueMembershipIds.includes(leagueId)) {
-        console.error(`User ${user.email} tried to fetch holdings for league ${leagueId} without membership.`)
+        console.error(`User ${user.email} tried to fetch investments for league ${leagueId} without membership.`)
         return {status: 401, jsonBody: {success: false}}
     }
 
-    const holdings = await getHoldingsByUserAndLeagueQuery(user.email, leagueId);
+    const investments = await getLeagueInvestmentsQuery(leagueId, latestN ? Number(latestN) : 0);
 
-    return { status: 201, jsonBody: holdings }
+    return { status: 201, jsonBody: investments }
 }
 
-export async function getUserHoldings(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function getLeagueInvestments(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     return addMiddleWares(request, context, callHandler)
 };
 
-app.http('getUserHoldings', {
+app.http('getLeagueInvestments', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: getUserHoldings
+    handler: getLeagueInvestments
 });

@@ -8,8 +8,10 @@ import { useLeagueStore } from "@/src/stores/LeagueStore"
 import InvestMentForm from './forms/InvestmentForm.vue';
 import { onMounted, ref } from 'vue';
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { useUserStore } from '../stores/UserStore';
 
 const leagueStore = useLeagueStore();
+const userStore = useUserStore();
 const leagueLoading = ref(true);
 const { logout, loginWithPopup, user, isAuthenticated } = useAuth0();
 
@@ -24,6 +26,7 @@ function login() {
 onMounted(async () => {
   await leagueStore.refreshLeagues();
   leagueLoading.value = false;
+  userStore.refreshUser();
 })
 </script>
 <template>
@@ -99,12 +102,12 @@ onMounted(async () => {
             </div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+          <DropdownMenuGroup v-if="leagueStore.activeLeague">
             <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
               Dashboard
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
-              Leaderboard
+            <DropdownMenuItem v-if="userStore.isSiteAdmin" class="cursor-pointer h-12" :as="RouterLink" to="/leagueAdmin">
+              League Admin
             </DropdownMenuItem>
             <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
               Verifications
@@ -112,8 +115,15 @@ onMounted(async () => {
             <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
               Activities
             </DropdownMenuItem>
-
           </DropdownMenuGroup>
+
+          <div v-if="userStore.isSiteAdmin">
+            <DropdownMenuSeparator />
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/siteAdmin">
+              Site Admin
+            </DropdownMenuItem>
+          </div>
+
           <DropdownMenuSeparator />
           <DropdownMenuItem class="cursor-pointer h-12" @click="logoutUser">
             Log out

@@ -5,7 +5,7 @@ import { LeagueMembership } from "../types/league.js";
 import { randomUUID } from "crypto";
 import { addInvestmentCommand  } from "../commands/addInvestmentCommand.js";
 import { AddInvestmentDTO, Investment } from "../types/investments.js";
-import { getHoldingsByUserAndLeague } from "../queries/getHoldingsByUserAndLeague.js";
+import { getHoldingsByUserAndLeagueQuery } from "../queries/getHoldingsByUserAndLeagueQuery.js";
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const inv = await request.json() as Investment
 
@@ -25,7 +25,7 @@ async function callHandler(request: HttpRequest, _: InvocationContext, user: Use
     // TODO: impl backend validation when buying / selling stocks.
     const addInvSuccess = await addInvestmentCommand(invWithId)
     if(!addInvSuccess) return { status: 500, jsonBody: {}}
-    const holdingsAfterInvestment = await getHoldingsByUserAndLeague(invWithId.userId, invWithId.leagueId);
+    const holdingsAfterInvestment = await getHoldingsByUserAndLeagueQuery(invWithId.userId, invWithId.leagueId);
     const jsonResponse = {
         addedInvestment: invWithId, 
         holdingsAfterInvestment: holdingsAfterInvestment
