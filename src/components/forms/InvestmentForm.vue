@@ -7,6 +7,7 @@ import { cn } from "@/src/lib/utils"
 import { Calendar } from '@/src/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
+import BetSubForm from './BetSubForm.vue';
 import { InvestmentTypes } from '@/types/investments';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/src/components/ui/dialog'
 import { useInvestmentStore } from "@/src/stores/InvestmentStore";
@@ -44,7 +45,10 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
     } else {
         open.value = false;
     }
-    
+}
+
+async function handleBetInvestment(uniqueId: string, amount: number, odds: number, expiryDate: string) {
+    console.log(uniqueId, amount, odds, expiryDate)
 }
 
 </script>
@@ -70,6 +74,9 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
                         <SelectItem value="stock">
                             Stock
                         </SelectItem>
+                        <SelectItem value="bet">
+                            Bet
+                            </SelectItem>
                         <SelectItem value="other">
                             Other
                         </SelectItem>
@@ -91,6 +98,7 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
                 </Popover>
             </div>
             <StockSubForm v-if="investmentType === 'stock' && investmentStore.holdings" :holdings="investmentStore.holdings"  @form-submit="handleStockInvestment" @cancel="open = false" />
+            <BetSubForm v-if="investmentType === 'bet'" @form-submit="handleBetInvestment" />
         </DialogContent>
     </Dialog>
 </template>

@@ -4,13 +4,13 @@ import { useLeagueStore } from '@/src/stores/LeagueStore';
 import { watch, ref, computed } from 'vue';
 import { Skeleton } from "@/src/components/ui/skeleton";
 import InvestmentCard from "@/src/components/InvestmentCard.vue"
-import { RefreshCcwIcon } from "lucide-vue-next"
+import { useRouter } from 'vue-router';
 
 const investmentStore = useInvestmentStore();
 const leagueStore = useLeagueStore();
 const holdingsLoading = ref(true);
 const investmentsLoading = ref(true);
-
+const router = useRouter();
 watch(() => leagueStore.activeLeague, async () => {
   if (leagueStore.activeLeague) {
     await investmentStore.refreshHoldings(leagueStore.activeLeague!.id);
@@ -33,7 +33,6 @@ const latestInvestments = computed(() => {
       <div class="w-4"></div>
       <h1 class="text-center text-xl mb-2">Dashboard</h1>
       <div class="w-4">
-      <RefreshCcwIcon class="w-4 justify-self-start ml-2"/>
         </div>
     </div>
     <div class="flex flex-row gap-4">
@@ -69,7 +68,7 @@ const latestInvestments = computed(() => {
         <InvestmentCard :investment="li" />
       </div>
       <div>
-        <a class="text-blue-600 text-sm">> Go to all investments</a>
+        <a @click="router.push('leagueInvestments')" class="text-blue-600 text-sm">> Go to all investments</a>
       </div>
     </div>
     <div v-if="investmentStore.holdings && !holdingsLoading" class="flex flex-col border rounded p-2">

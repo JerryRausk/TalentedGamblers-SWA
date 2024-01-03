@@ -12,9 +12,11 @@ export type StockInvestment = {
 }
 export type BetInvestment = {
     type: InvestmentTypes.Bet,
+    uniqueId: string,
     amount: number,
     odds: number,
     expiryDate: string,
+    result: "win" | "loss" | "not settled"
 }
 export type Investment = {
   id: string,
