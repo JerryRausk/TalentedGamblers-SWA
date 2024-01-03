@@ -16,7 +16,7 @@ watch(() => leagueStore.activeLeague, async () => {
     await investmentStore.refreshHoldings(leagueStore.activeLeague!.id);
     holdingsLoading.value = false;
     if(investmentStore.leagueInvestments.length === 0)
-      await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 3);
+      await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 0);
     investmentsLoading.value = false;
   }
 }, { immediate: true })
