@@ -36,14 +36,11 @@ onMounted(async () => {
         <NavigationMenuLink v-if="isAuthenticated" :as="RouterLink" to="/" :class="navigationMenuTriggerStyle()">
           TG
         </NavigationMenuLink>
-        <NavigationMenuLink v-else="" :as="RouterLink" to="/" :class="navigationMenuTriggerStyle()">
-          TG
-        </NavigationMenuLink>
       </NavigationMenuItem>
     </NavigationMenuList>
-    <div v-if="!leagueLoading">
-      <div v-if="user && user.email && leagueStore.activeLeague">
-        <DropdownMenu>
+    <div v-if="!leagueLoading" >
+      <div v-if="user && user.email && leagueStore.activeLeague" class="flex flex-row">
+        <DropdownMenu v-if="leagueStore.availableLeageus.length > 1">
           <DropdownMenuTrigger>
             ▾ {{ leagueStore.activeLeague.name }}
           </DropdownMenuTrigger>
@@ -68,8 +65,14 @@ onMounted(async () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <div v-else class="flex items-center">
+          <div>
+            {{ leagueStore.activeLeague.name }}
+          </div>
+        </div>
         <InvestMentForm :user-email="user.email" :league="leagueStore.activeLeague" />
       </div>
+
       <div v-else>
         User/League error
       </div>

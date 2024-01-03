@@ -1,4 +1,4 @@
-import { Investment, InvestmentTypes, StockHolding, StockInvestment } from "../types/investments";
+import { BetResults, Investment, InvestmentTypes, NotSettledBetInvestMent, StockHolding, StockInvestment } from "../types/investments";
 
 export async function calculateStockHoldingsForUser(userInvestments: Investment[]) {
     
@@ -18,9 +18,22 @@ export async function calculateStockHoldingsForUser(userInvestments: Investment[
             stockHoldings[stock.ticker] = {ticker: stock.ticker, heldAmount: stock.buyPosition ? stock.amount : -1 * stock.amount}
         }
     }
-
     const stockHoldingList = Object.entries(stockHoldings).map(holding => holding[1]).filter(h => h.heldAmount != 0)
     return stockHoldingList
+}
+
+export async function calculateNotSettledBetsForUser(investments: Investment[]) {
+    
+    const notSettledBets = [] as NotSettledBetInvestMent[]
+    
+    for(const i of investments) {
+        if(i.data.type === InvestmentTypes.Bet) {
+            if(i.data.result === BetResults.NotSettled) {
+                notSettledBets.push(i.data as NotSettledBetInvestMent);
+            }
+        }
+    }
+    return notSettledBets;
 }
 
 export async function calculateCashHoldingsForUser(investments: Investment[]) {
@@ -31,7 +44,7 @@ export async function calculateCashHoldingsForUser(investments: Investment[]) {
             r.data.buyPosition ? cash -= (r.data.amount * r.data.price) : cash += (r.data.amount * r.data.price)
         }
         else if(r.data.type === InvestmentTypes.Bet) {
-            cash -= r.data.amount
+            r.data.result === BetResults.Win ? cash += r.data.amount * r.data.odds : cash -= r.data.amount;
         }
     }
     return cash;

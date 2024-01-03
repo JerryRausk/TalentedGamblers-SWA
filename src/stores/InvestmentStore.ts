@@ -5,8 +5,8 @@ import { postJson } from "@/src/services/apiService.js";
 
 
 export const useInvestmentStore = defineStore('investments', () => {
-  const holdings = ref<Holdings | null>(null)
-  const investments = ref<Investment[]>([]);
+  const userHoldings = ref<Holdings | null>(null)
+  const userInvestments = ref<Investment[]>([]);
   const leagueInvestments = ref<Investment[]>([]);
   const leagueHoldings = ref<Holdings[] | null>(null)
 
@@ -17,20 +17,22 @@ export const useInvestmentStore = defineStore('investments', () => {
       return false
     }
     console.log(res.data);
-    investments.value.push(res.data.addedInvestment);
-    holdings.value = res.data.holdingsAfterInvestment;
+    userInvestments.value = res.data.leagueInvestments.investments.filter(i => i.userId === investment.userId)
+    userHoldings.value = res.data.leagueInvestments.holdings.filter(h => h.userId === investment.userId)[0]
+    leagueHoldings.value = res.data.leagueInvestments.holdings;
+    leagueInvestments.value = res.data.leagueInvestments.investments;
     return true;
   }
 
   async function refreshInvestments(leagueId: string) {
-    investments.value = []
+    userInvestments.value = []
     
     const res = await postJson<any, Investment[]>("getInvestments", {leagueId})
     if(!res.success) {
       console.error("Ultra error not good when fetching investments");
       return false;
     }
-    investments.value = res.data;
+    userInvestments.value = res.data;
     return true;
   }
 
@@ -51,14 +53,14 @@ export const useInvestmentStore = defineStore('investments', () => {
   }
 
   async function refreshHoldings(leagueId: string) {
-    holdings.value = null;
+    userHoldings.value = null;
 
     const res = await postJson<{leagueId: string}, Holdings>("getUserHoldings", {leagueId})
     if(!res.success) {
       console.error("Ultra error not good when fetching holdings");
       return false;
     }
-    holdings.value = res.data;
+    userHoldings.value = res.data;
   }
-  return { investments, leagueInvestments, leagueHoldings, addInvestment, holdings, refreshInvestments, refreshHoldings, refreshLeagueInvestments }
+  return { investments: userInvestments, leagueInvestments, leagueHoldings, addInvestment, holdings: userHoldings, refreshInvestments, refreshHoldings, refreshLeagueInvestments }
 })

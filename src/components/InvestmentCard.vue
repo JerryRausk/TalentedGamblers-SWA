@@ -21,4 +21,16 @@ defineProps<{
     investment.data.amount).toLocaleString() }}
     </p>
   </div>
+  <div class="border border-secondary p-2 rounded" v-if="investment.data.type === InvestmentTypes.Bet">
+    <div class="flex flex-row justify-between mb-2">
+      <p class="text-md">
+        {{ investment.userId }}
+      </p>
+      <p class="text-muted-foreground text-xs">{{ investment.date }}</p>
+    </div>
+
+    <p class="text-sm">
+      Bet {{ investment.data.amount }} with odds {{ investment.data.odds }}, expires {{ investment.data.expiryDate }}
+    </p>
+  </div>
 </template>

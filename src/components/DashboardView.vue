@@ -45,11 +45,10 @@ const latestInvestments = computed(() => {
           
           <div class="text-sm" v-for="lh in investmentStore.leagueHoldings">
             <p>{{ lh.userId }}</p>
-            <p class="text-xs text-muted-foreground">{{ lh.cashHoldings.toLocaleString() }} + {{ lh.stockHoldings.length }} different stocks</p>
-          </div>
-          <div class="mt-2 text-sm">
-            <p class="text-blue-600">
-              > Go to leaderboard
+            <p class="text-xs text-muted-foreground">
+              {{ lh.cashHoldings.toLocaleString() }} 
+              {{ lh.stockHoldings.length > 0 ? ` + ${lh.stockHoldings.length} investment${lh.stockHoldings.length > 1 ? "s" : ""}` : ""}}
+              {{ lh.notSettledBets.length > 0 ? ` + ${lh.notSettledBets.length} bets` : "" }}
             </p>
           </div>
         </div>
@@ -83,6 +82,11 @@ const latestInvestments = computed(() => {
           <p>{{ h.ticker }}</p>
           <p class="text-xs mt-2">{{ h.heldAmount }}</p>
         </div>
+        <div v-for="bet in investmentStore.holdings.notSettledBets"
+          class="flex flex-col border rounded p-1 align-middle justify-center text-center min-w-14">
+          <p>Bet</p>
+          <p class="text-xs mt-2">{{ bet.amount }} @ {{ bet.odds }}</p>
+        </div>
       </div>
     </div>
     <div v-else class="flex flex-col border rounded p-2">
@@ -101,27 +105,4 @@ const latestInvestments = computed(() => {
 </template>
 
 <style scoped>
-table {
-  width: 100%;
-}
-
-.table-wrapper {
-  min-width: 20rem;
-  max-width: 40rem;
-  margin-top: 1rem;
-  border: 1px solid black;
-  border-radius: 8px;
-}
-
-th,
-td {
-  padding: 0.25rem;
-  vertical-align: middle;
-}
-
-.profile-pic {
-  height: 3rem;
-  width: 3rem;
-  border-radius: 100%;
-}
 </style>

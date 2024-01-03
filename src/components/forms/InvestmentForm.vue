@@ -8,7 +8,7 @@ import { Calendar } from '@/src/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
 import BetSubForm from './BetSubForm.vue';
-import { InvestmentTypes } from '@/types/investments';
+import { InvestmentTypes, BetResults } from '@/types/investments';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/src/components/ui/dialog'
 import { useInvestmentStore } from "@/src/stores/InvestmentStore";
 import { League } from "@/types/league"
@@ -48,7 +48,27 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
 }
 
 async function handleBetInvestment(uniqueId: string, amount: number, odds: number, expiryDate: string) {
-    console.log(uniqueId, amount, odds, expiryDate)
+    const invres = await investmentStore.addInvestment({
+        id: "",
+        userId: props.userEmail,
+        leagueId: props.league.id,
+        date: investmentDate.value,
+        verified: false,
+        verifiedBy: null,
+        data: {
+            type: InvestmentTypes.Bet,
+            amount,
+            expiryDate,
+            odds,
+            uniqueId,
+            result: BetResults.NotSettled
+        }
+    })
+    if(!invres) {
+        toast({title: "Failed to submit new investment", description: "Try again or try something else", variant: "destructive"})
+    } else {
+        open.value = false;
+    }
 }
 
 </script>
@@ -56,7 +76,7 @@ async function handleBetInvestment(uniqueId: string, amount: number, odds: numbe
 <template>
     <Dialog  v-model:open="open">
         <DialogTrigger>
-            <Button class="text-xl" variant="ghost">+</Button>
+            <Button class="text-xl p-2" variant="ghost">+</Button>
         </DialogTrigger>
         <DialogContent class="max-w-[90%] rounded flex flex-col">
             <DialogHeader>

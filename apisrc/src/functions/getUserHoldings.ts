@@ -3,7 +3,7 @@ import { addMiddleWares } from "../middleware/middlewares.js";
 import { User } from "@auth0/auth0-vue";
 import { LeagueMembership } from "../types/league.js";
 import { getInvestmentsByUserAndLeagueQuery } from "../queries/getInvestmentsByUserAndLeagueQuery.js";
-import { calculateCashHoldingsForUser, calculateStockHoldingsForUser } from "../services/calculator.js";
+import { calculateCashHoldingsForUser, calculateNotSettledBetsForUser, calculateStockHoldingsForUser } from "../services/calculator.js";
 import { Holdings } from "../types/investments.js";
 
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
@@ -21,7 +21,8 @@ async function callHandler(request: HttpRequest, _: InvocationContext, user: Use
         userId: user.email,
         leagueId: leagueId,
         stockHoldings: await calculateStockHoldingsForUser(investments),
-        cashHoldings: await calculateCashHoldingsForUser(investments)
+        cashHoldings: await calculateCashHoldingsForUser(investments),
+        notSettledBets: await calculateNotSettledBetsForUser(investments)
     } satisfies Holdings;
 
     return { status: 201, jsonBody: holdings }
