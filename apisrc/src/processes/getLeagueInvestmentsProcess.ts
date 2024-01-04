@@ -4,7 +4,7 @@ import { Holdings, LeagueInvestmentsDTO } from "../types/investments";
 
 
 export async function getLeagueInvestmentsProcess(leagueId: string): Promise<LeagueInvestmentsDTO> {
-    const investments = await getLeagueInvestmentsQuery(leagueId, 0);
+    const investments = await getLeagueInvestmentsQuery(leagueId);
 
     const uniqueUsers = new Set(investments.map(i => i.userId))
     const holdings = [] as Holdings[];

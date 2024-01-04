@@ -54,6 +54,7 @@ export type AddInvestmentDTO = {
 export type StockHolding = {
         ticker: string,
         heldAmount: number,
+        averageBuyPrice: number,
 }
 
 export type OtherInvestmentHolding = {

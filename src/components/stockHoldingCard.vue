@@ -5,8 +5,12 @@ defineProps<{
 }>();
 </script>
 <template>
-  <div class="flex flex-col border rounded p-1 align-middle justify-center text-center min-w-14">
+  <div class="flex flex-col justify-between border rounded p-1 align-middle  text-center min-w-24 bg-green-950 bg-opacity-50">
     <p>{{ stockHolding.ticker }}</p>
-    <p class="text-xs mt-2">{{ stockHolding.heldAmount }}</p>
+    <div>
+      <p class="text-xs text-muted-foreground mt-2">({{ stockHolding.heldAmount.toLocaleString() }} * {{ stockHolding.averageBuyPrice.toLocaleString() }})</p>
+      <p class="text-sm">{{ (stockHolding.heldAmount * stockHolding.averageBuyPrice).toLocaleString() }}</p>
+
+    </div>
   </div>
 </template>

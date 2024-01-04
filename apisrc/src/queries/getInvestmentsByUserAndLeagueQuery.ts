@@ -4,7 +4,7 @@ import { getContainer, stripMetaFromResource } from "../services/cosmosService";
 import { Investment } from "../types/investments.js";
 export async function getInvestmentsByUserAndLeagueQuery(userId: string, leagueId: string) {
     const q = {
-        query: "SELECT * FROM c WHERE c.leagueId = @leagueId and c.userId = @userId", 
+        query: "SELECT * FROM c WHERE c.leagueId = @leagueId and c.userId = @userId ORDER BY c.date ASC", 
         parameters: [{name: "@leagueId", value: leagueId}, {name: "@userId", value: userId}]
     } as SqlQuerySpec
     const container = await getContainer();

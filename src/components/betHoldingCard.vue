@@ -6,8 +6,11 @@ defineProps<{
 }>();
 </script>
 <template>
-  <div class="flex flex-col border rounded p-1 align-middle justify-center text-center min-w-14">
+  <div class="flex flex-col justify-between border rounded p-1 align-middle text-center min-w-28 bg-red-950 bg-opacity-50">
     <p>Bet</p>
-    <p class="text-xs mt-2">{{ notSettledBet.amount }} @ {{ notSettledBet.odds }}</p>
+    <div>
+      <p class="text-xs text-muted-foreground mt-2">odds: {{ notSettledBet.odds }}</p>
+      <p class="text-sm">amount: {{ notSettledBet.amount }}</p>
+    </div>
   </div>
 </template>

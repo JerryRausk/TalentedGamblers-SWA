@@ -7,7 +7,6 @@ import { getLeagueInvestmentsProcess } from "../processes/getLeagueInvestmentsPr
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const jsonReqBody = await request.json()
     const leagueId = jsonReqBody["leagueId"]
-    const latestN = jsonReqBody["latestN"]
 
     const leagueMembershipIds = leagueMemberships.map(l => l.leagueId)
     if (!leagueMembershipIds.includes(leagueId)) {

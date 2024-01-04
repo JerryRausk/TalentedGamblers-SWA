@@ -42,8 +42,7 @@ export const useInvestmentStore = defineStore('investments', () => {
     userInvestments.value = [];
     userHoldings.value = null;
     const res = await postJson<any, LeagueInvestmentsDTO>("getLeagueInvestments", {
-      leagueId,
-      latestN: 0
+      leagueId
     })
     if(!res.success) {
       console.error("Ultra error not good when fetching league investments");

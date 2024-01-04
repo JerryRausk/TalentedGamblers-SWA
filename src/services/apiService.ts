@@ -2,7 +2,6 @@ import { auth0 } from '@/src/auth0';
 
 type Endpoint = "getLeagues" 
     | "addInvestment" 
-    | "testauth" 
     | "getInvestments" 
     | "getUserHoldings" 
     | "getUserDetails" 
