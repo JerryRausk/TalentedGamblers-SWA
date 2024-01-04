@@ -8,6 +8,7 @@ import { Calendar } from '@/src/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import StockSubForm from './StockSubForm.vue';
 import BetSubForm from './BetSubForm.vue';
+import OtherInvestmentSubForm from "./OtherInvestmentSubForm.vue"
 import { InvestmentTypes, BetResults } from '@/types/investments';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/src/components/ui/dialog'
 import { useInvestmentStore } from "@/src/stores/InvestmentStore";
@@ -47,7 +48,7 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
     }
 }
 
-async function handleBetInvestment(uniqueId: string, amount: number, odds: number, expiryDate: string) {
+async function handleBetInvestment(name: string, amount: number, odds: number, expiryDate: string) {
     const invres = await investmentStore.addInvestment({
         id: "",
         userId: props.userEmail,
@@ -60,8 +61,30 @@ async function handleBetInvestment(uniqueId: string, amount: number, odds: numbe
             amount,
             expiryDate,
             odds,
-            uniqueId,
+            name,
             result: BetResults.NotSettled
+        }
+    })
+    if(!invres) {
+        toast({title: "Failed to submit new investment", description: "Try again or try something else", variant: "destructive"})
+    } else {
+        open.value = false;
+    }
+}
+
+async function handleOtherInvestment(name: string, amount: number, buyPosition: boolean) {
+    const invres = await investmentStore.addInvestment({
+        id: "",
+        userId: props.userEmail,
+        leagueId: props.league.id,
+        date: investmentDate.value,
+        verified: false,
+        verifiedBy: null,
+        data: {
+            type: InvestmentTypes.Other,
+            buyPosition,
+            amount,
+            name
         }
     })
     if(!invres) {
@@ -117,8 +140,9 @@ async function handleBetInvestment(uniqueId: string, amount: number, odds: numbe
                     </PopoverContent>
                 </Popover>
             </div>
-            <StockSubForm v-if="investmentType === 'stock' && investmentStore.holdings" :holdings="investmentStore.holdings"  @form-submit="handleStockInvestment" @cancel="open = false" />
-            <BetSubForm v-if="investmentType === 'bet'" @form-submit="handleBetInvestment" />
+            <StockSubForm v-if="investmentType === InvestmentTypes.Stock && investmentStore.holdings" :holdings="investmentStore.holdings"  @form-submit="handleStockInvestment" @cancel="open = false" />
+            <BetSubForm v-if="investmentType === InvestmentTypes.Bet" @form-submit="handleBetInvestment" @cancel="open = false" />
+            <OtherInvestmentSubForm v-if="investmentType === InvestmentTypes.Other && investmentStore.holdings" :holdings="investmentStore.holdings" @form-submit="handleOtherInvestment" @cancel="open = false" />
         </DialogContent>
     </Dialog>
 </template>

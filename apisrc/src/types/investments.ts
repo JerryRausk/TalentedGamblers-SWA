@@ -18,9 +18,16 @@ export type StockInvestment = {
     amount: number,
 }
 
+export type OtherInvestment = {
+    type: InvestmentTypes.Other,
+    name: string,
+    amount: number,
+    buyPosition: boolean
+}
+
 export type BetInvestment = {
     type: InvestmentTypes.Bet,
-    uniqueId: string,
+    name: string,
     amount: number,
     odds: number,
     expiryDate: string,
@@ -36,7 +43,7 @@ export type Investment = {
   date: string,
   verified: boolean,
   verifiedBy: string | null
-  data: StockInvestment | BetInvestment
+  data: StockInvestment | BetInvestment | OtherInvestment
 }
 
 export type AddInvestmentDTO = {
@@ -49,12 +56,17 @@ export type StockHolding = {
         heldAmount: number,
 }
 
+export type OtherInvestmentHolding = {
+    name: string,
+    heldAmount: number
+}
 export type Holdings = {
     userId: string,
     leagueId: string,
     stockHoldings: StockHolding[],
     cashHoldings: number,
-    notSettledBets: NotSettledBetInvestMent[]
+    notSettledBets: NotSettledBetInvestMent[],
+    otherInvestmentsHoldings: OtherInvestmentHolding[],
 }
 
 export type LeagueInvestmentsDTO = {

@@ -5,6 +5,7 @@ import { watch, ref, computed } from 'vue';
 import { Skeleton } from "@/src/components/ui/skeleton";
 import InvestmentCard from "@/src/components/InvestmentCard.vue"
 import { useRouter } from 'vue-router';
+import { Holdings } from '@/types/investments';
 
 const investmentStore = useInvestmentStore();
 const leagueStore = useLeagueStore();
@@ -15,16 +16,37 @@ watch(() => leagueStore.activeLeague, async () => {
   if (leagueStore.activeLeague) {
     await investmentStore.refreshHoldings(leagueStore.activeLeague!.id);
     holdingsLoading.value = false;
-    if(investmentStore.leagueInvestments.length === 0)
+    if (investmentStore.leagueInvestments.length === 0)
       await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 0);
     investmentsLoading.value = false;
   }
 }, { immediate: true })
 
 const latestInvestments = computed(() => {
-  if(!investmentStore.leagueInvestments) return []
+  if (!investmentStore.leagueInvestments) return []
   return investmentStore.leagueInvestments.slice(0, 3)
 })
+
+function leaderboardDetailsText(leagueHoldings: Holdings) {
+  let holdingTexts = []
+
+  if (leagueHoldings.cashHoldings > 0) holdingTexts.push(`${leagueHoldings.cashHoldings.toLocaleString()} in cash`)
+  
+  if (leagueHoldings.notSettledBets.length > 0) {
+    holdingTexts.push(`${leagueHoldings.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0).toLocaleString()} in bets`)
+  }
+
+  if (leagueHoldings.stockHoldings.length > 0) {
+    holdingTexts.push(`${leagueHoldings.stockHoldings.length} stock${leagueHoldings.stockHoldings.length > 1 ? "s" : ""}`)
+  }
+
+
+  if (leagueHoldings.otherInvestmentsHoldings.length > 0) {
+    holdingTexts.push(`${leagueHoldings.otherInvestmentsHoldings.length} other investment${leagueHoldings.otherInvestmentsHoldings.length > 1 ? "s" : ""}`)
+  }
+
+  return holdingTexts
+}
 </script>
 
 <template>
@@ -33,33 +55,28 @@ const latestInvestments = computed(() => {
       <div class="w-4"></div>
       <h1 class="text-center text-xl mb-2">Dashboard</h1>
       <div class="w-4">
-        </div>
+      </div>
     </div>
     <div class="flex flex-row gap-4">
-      <div class="flex flex-col w-fit min-w-44">
+      <div class="flex flex-col w-full">
         <div class="border-secondary border rounded p-2  gap-2 flex flex-col">
-          <div class="flex flex-row justify-between">
-            <h4>Leaderboard</h4>
-            
-          </div>
-          
-          <div class="text-sm" v-for="lh in investmentStore.leagueHoldings">
-            <p>{{ lh.userId }}</p>
-            <p class="text-xs text-muted-foreground">
-              {{ lh.cashHoldings.toLocaleString() }} 
-              {{ lh.stockHoldings.length > 0 ? ` + ${lh.stockHoldings.length} investment${lh.stockHoldings.length > 1 ? "s" : ""}` : ""}}
-              {{ lh.notSettledBets.length > 0 ? ` + ${lh.notSettledBets.length} bets` : "" }}
-            </p>
-          </div>
+          <h4>Leaderboard</h4>
+          <ol class="text-sm list-decimal ml-4 flex flex-col gap-2">
+            <li v-for="lh in investmentStore.leagueHoldings">
+              <p>{{ lh.userId.split("@")[0] }}</p>
+              <p class="text-xs text-muted-foreground">{{ leaderboardDetailsText(lh).join(", ") }}</p>
+            </li>
+          </ol>
         </div>
       </div>
-      <div class="flex flex-col border p-2 w-full rounded">
-        <h4>Waiting for you</h4>
-        <ul class="text-sm text-blue-600">
-          <li>7 verifications</li>
-          <li>2 bets has expired</li>
-        </ul>
-      </div>
+
+    </div>
+    <div class="flex flex-col border p-2 w-full rounded">
+      <h4>Waiting for you</h4>
+      <ul class="text-sm text-blue-600">
+        <li>7 verifications</li>
+        <li>2 bets has expired</li>
+      </ul>
     </div>
     <div class="flex flex-col border rounded p-2 gap-2">
       <h4>Investments</h4>
@@ -104,5 +121,4 @@ const latestInvestments = computed(() => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

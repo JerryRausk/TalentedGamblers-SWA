@@ -1,4 +1,4 @@
-import { BetResults, Investment, InvestmentTypes, NotSettledBetInvestMent, StockHolding, StockInvestment } from "../types/investments";
+import { BetResults, Investment, InvestmentTypes, NotSettledBetInvestMent, OtherInvestment, OtherInvestmentHolding, StockHolding, StockInvestment } from "../types/investments";
 
 export async function calculateStockHoldingsForUser(userInvestments: Investment[]) {
     
@@ -46,6 +46,30 @@ export async function calculateCashHoldingsForUser(investments: Investment[]) {
         else if(r.data.type === InvestmentTypes.Bet) {
             r.data.result === BetResults.Win ? cash += r.data.amount * r.data.odds : cash -= r.data.amount;
         }
+        else if(r.data.type === InvestmentTypes.Other) {
+            r.data.buyPosition ? cash -= r.data.amount : cash += r.data.amount;
+        }
     }
     return cash;
+}
+
+export async function calculateOtherInvestmentHoldingsForUser(investments: Investment[]) {
+    const otherInvestments = investments.filter(i => i.data.type === InvestmentTypes.Other);
+    if(otherInvestments.length === 0) return []
+
+    let otherHoldings = {} as Record<string, OtherInvestmentHolding>
+    for(const s of otherInvestments) {
+        const inv = s.data as OtherInvestment;
+        if(Object.keys(otherHoldings).includes(inv.name)) {
+            if(inv.buyPosition) {
+                otherHoldings[inv.name].heldAmount += inv.amount;
+            } else {
+                otherHoldings[inv.name].heldAmount -= inv.amount;
+            }
+        } else {
+            otherHoldings[inv.name] = {name: inv.name, heldAmount: inv.buyPosition ? inv.amount : -1 * inv.amount}
+        }
+    }
+    const stockHoldingList = Object.entries(otherHoldings).map(holding => holding[1]).filter(h => h.heldAmount != 0)
+    return stockHoldingList
 }
