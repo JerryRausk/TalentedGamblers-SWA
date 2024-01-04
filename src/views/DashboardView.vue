@@ -5,9 +5,11 @@ import { watch, ref, computed } from 'vue';
 import { Skeleton } from "@/src/components/ui/skeleton";
 import InvestmentCard from "@/src/components/InvestmentCard.vue"
 import { useRouter } from 'vue-router';
-import { Holdings } from '@/types/investments';
 import { User } from '@auth0/auth0-vue';
 import { League } from "@/types/league"
+import StockHoldingCard from "@/src/components/stockHoldingCard.vue"
+import BetHoldingCard from "@/src/components/betHoldingCard.vue";
+import LeaderboardCard from "@/src/components/leaderboardCard.vue";
 
 const props = defineProps<{
   activeLeague: League,
@@ -38,27 +40,6 @@ const latestInvestments = computed(() => {
   if (!investmentStore.leagueInvestments) return []
   return investmentStore.leagueInvestments.slice(0, 3)
 })
-
-function leaderboardDetailsText(leagueHoldings: Holdings) {
-  let holdingTexts = []
-
-  if (leagueHoldings.cashHoldings > 0) holdingTexts.push(`${leagueHoldings.cashHoldings.toLocaleString()} in cash`)
-
-  if (leagueHoldings.notSettledBets.length > 0) {
-    holdingTexts.push(`${leagueHoldings.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0).toLocaleString()} in bets`)
-  }
-
-  if (leagueHoldings.stockHoldings.length > 0) {
-    holdingTexts.push(`${leagueHoldings.stockHoldings.length} stock${leagueHoldings.stockHoldings.length > 1 ? "s" : ""}`)
-  }
-
-
-  if (leagueHoldings.otherInvestmentsHoldings.length > 0) {
-    holdingTexts.push(`${leagueHoldings.otherInvestmentsHoldings.length} other investment${leagueHoldings.otherInvestmentsHoldings.length > 1 ? "s" : ""}`)
-  }
-
-  return holdingTexts
-}
 </script>
 
 <template>
@@ -71,8 +52,7 @@ function leaderboardDetailsText(leagueHoldings: Holdings) {
             <ol class="text-sm list-decimal ml-4 flex flex-col gap-2">
               <Skeleton v-if="loading" v-for="_ in [1,2,3]" class="w-36 h-10 rounded ml-[-1rem]" />
             <li v-for="lh in investmentStore.leagueHoldings">
-              <p>{{ lh.userId.split("@")[0] }}</p>
-              <p class="text-xs text-muted-foreground">{{ leaderboardDetailsText(lh).join(", ") }}</p>
+              <LeaderboardCard :holdings="lh" />
             </li>
           </ol>
           </div>
@@ -109,16 +89,8 @@ function leaderboardDetailsText(leagueHoldings: Holdings) {
       </div>
       <hr class="my-2">
       <div class="flex flex-row gap-2 flex-wrap">
-        <div v-for="h in investmentStore.userHoldings.stockHoldings"
-          class="flex flex-col border rounded p-1 align-middle justify-center text-center min-w-14">
-          <p>{{ h.ticker }}</p>
-          <p class="text-xs mt-2">{{ h.heldAmount }}</p>
-        </div>
-        <div v-for="bet in investmentStore.userHoldings.notSettledBets"
-          class="flex flex-col border rounded p-1 align-middle justify-center text-center min-w-14">
-          <p>Bet</p>
-          <p class="text-xs mt-2">{{ bet.amount }} @ {{ bet.odds }}</p>
-        </div>
+        <StockHoldingCard v-for="h in investmentStore.userHoldings.stockHoldings" :stock-holding="h" />
+        <BetHoldingCard v-for="b in investmentStore.userHoldings.notSettledBets" :not-settled-bet="b" />
       </div>
     </div>
     <div v-else class="flex flex-col border rounded p-2">

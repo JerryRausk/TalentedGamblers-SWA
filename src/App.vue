@@ -20,7 +20,7 @@ watch([isLoading, leagueStore.activeLeague], () => {
 <template>
     <NavBar v-if="isAuthenticated" class="mb-2"/>
     <RouterView v-if="isAuthenticated && leagueStore.activeLeague" :user="user" :activeLeague="leagueStore.activeLeague"/>
-    <Landing v-if="!isAuthenticated" />
+    <Landing v-if="!isAuthenticated && !isLoading" />
     <Toaster />
 </template>
 
