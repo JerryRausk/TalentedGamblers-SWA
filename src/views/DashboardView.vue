@@ -6,9 +6,14 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import InvestmentCard from "@/src/components/InvestmentCard.vue"
 import { useRouter } from 'vue-router';
 import { Holdings } from '@/types/investments';
-import { useAuth0 } from '@auth0/auth0-vue';
+import { User } from '@auth0/auth0-vue';
+import { League } from "@/types/league"
 
-const { user } = useAuth0();
+const props = defineProps<{
+  activeLeague: League,
+  user: User
+}>();
+
 const investmentStore = useInvestmentStore();
 const leagueStore = useLeagueStore();
 const router = useRouter();
@@ -22,9 +27,9 @@ const expiringBets = computed(() => {
   ).sort((a, b) => new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime())
 })
 watch(() => leagueStore.activeLeague, async () => {
-  if (leagueStore.activeLeague && user.value && user.value.email) {
+  if (leagueStore.activeLeague && props.user.email) {
     if (!investmentStore.leagueHoldings || !investmentStore.userHoldings)
-      await investmentStore.refreshInvestmentData(leagueStore.activeLeague.id, user.value.email);
+      await investmentStore.refreshInvestmentData(leagueStore.activeLeague.id, props.user.email);
     loading.value = false;
   }
 }, { immediate: true })

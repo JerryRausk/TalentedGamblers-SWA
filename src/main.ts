@@ -2,8 +2,8 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import { authGuard } from '@auth0/auth0-vue';
-import DashboardView from './components/DashboardView.vue';
-import ProfileView from './components/ProfileView.vue';
+import DashboardView from './views/DashboardView.vue';
+import ProfileView from "./views/ProfileView.vue";
 import { createWebHashHistory, createRouter, RouteRecordRaw } from "vue-router";
 import LeagueAdminView from './views/leagueAdminView.vue';
 import { createPinia } from 'pinia'

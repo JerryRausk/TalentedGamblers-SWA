@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { useAuth0 } from '@auth0/auth0-vue';
+import { User } from '@auth0/auth0-vue';
 import { Button } from "@/src/components/ui/button";
-import { useToast } from '@/src/components/ui/toast/use-toast'
-import { getText, getJson } from "../services/apiService"
+import { useToast } from '@/src/components/ui/toast/use-toast';
+import { getText, getJson } from "../services/apiService";
+import { League } from "@/types/league";
 
-const { user } = useAuth0();
+defineProps<{
+  activeLeague: League,
+  user: User
+}>();
+
 const { toast } = useToast()
 
 async function testauth() {
@@ -27,7 +32,7 @@ async function testleague() {
 </script>
 
 <template>
-  <div class="justify-self-center p-5" v-if="user">
+  <div class="justify-self-center p-5">
     <h1 class="text-center">{{user.name}}</h1>
     <h1 class="text-center">{{user.nickname}}</h1>
     <h1 class="text-center">{{user.email}}</h1>

@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import InvestmentCard from "@/src/components/InvestmentCard.vue"
 import { useInvestmentStore } from '@/src/stores/InvestmentStore.js';
-import { useLeagueStore } from "@/src/stores/LeagueStore.js";
 import { ref, onMounted } from "vue";
+import { User } from '@auth0/auth0-vue';
+import { League } from "@/types/league"
+
+const props = defineProps<{
+  activeLeague: League,
+  user: User
+}>();
 
 const investmentStore = useInvestmentStore();
-const leagueStore = useLeagueStore();
 const investmentsLoading = ref(true);
+
 onMounted(async () => {
-    if (!leagueStore.activeLeague) return; //TODO: Display error or something here....
-    await investmentStore.refreshLeagueInvestments(leagueStore.activeLeague.id, 0);
+    await investmentStore.refreshInvestmentData(props.activeLeague.id, props.user.email!);
     investmentsLoading.value = false;
 })
 </script>
