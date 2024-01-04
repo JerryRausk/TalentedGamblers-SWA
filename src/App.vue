@@ -10,11 +10,8 @@ const { isAuthenticated } = useAuth0();
  
 <template>
     <NavBar v-if="isAuthenticated" class="mb-2"/>
-    
-        <RouterView v-if="isAuthenticated" />
+    <RouterView v-if="isAuthenticated" />
     <Landing v-else />
-    
-    
     <Toaster />
 </template>
 

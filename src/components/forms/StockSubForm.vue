@@ -64,7 +64,7 @@ console.log(form.values)
             <p class="text-base" :class="value ? 'text-muted-foreground' : 'underline'">Sell</p>
           </FormLabel>
           <FormControl>
-            <SwitchNoOff :checked="value" @update:checked="handleChange" />
+            <SwitchNoOff :disabled="holdings.stockHoldings.length === 0" :checked="value" @update:checked="handleChange" />
           </FormControl>
           <FormLabel>
             <p class="text-base" :class="value ? '' : 'text-muted-foreground'">

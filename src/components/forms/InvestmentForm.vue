@@ -140,9 +140,9 @@ async function handleOtherInvestment(name: string, amount: number, buyPosition: 
                     </PopoverContent>
                 </Popover>
             </div>
-            <StockSubForm v-if="investmentType === InvestmentTypes.Stock && investmentStore.holdings" :holdings="investmentStore.holdings"  @form-submit="handleStockInvestment" @cancel="open = false" />
+            <StockSubForm v-if="investmentType === InvestmentTypes.Stock && investmentStore.userHoldings" :holdings="investmentStore.userHoldings"  @form-submit="handleStockInvestment" @cancel="open = false" />
             <BetSubForm v-if="investmentType === InvestmentTypes.Bet" @form-submit="handleBetInvestment" @cancel="open = false" />
-            <OtherInvestmentSubForm v-if="investmentType === InvestmentTypes.Other && investmentStore.holdings" :holdings="investmentStore.holdings" @form-submit="handleOtherInvestment" @cancel="open = false" />
+            <OtherInvestmentSubForm v-if="investmentType === InvestmentTypes.Other && investmentStore.userHoldings" :holdings="investmentStore.userHoldings" @form-submit="handleOtherInvestment" @cancel="open = false" />
         </DialogContent>
     </Dialog>
 </template>
