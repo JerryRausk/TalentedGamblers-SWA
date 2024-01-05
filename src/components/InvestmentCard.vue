@@ -42,7 +42,7 @@ defineProps<{
     </div>
 
     <p class="text-sm">
-      {{ investment.data.buyPosition ? "Bought" : "Sold" }} {{ investment.data.name }} for {{ investment.data.amount.toLocaleString() }}
+      {{ investment.data.buyPosition ? "Bought" : "Sold" }} {{ investment.data.name }} for {{ investment.data.price.toLocaleString() }}
     </p>
   </div>
 </template>

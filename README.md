@@ -1,20 +1,26 @@
 ## TODO
 
-### Add Landing page if you are invited but not invited to any league
+  - Other investments should be treated as a single unit, bought and sold as 1. 
 
-### Add landing page if you are not invited att all (with request to join)
+  - Add feature to close bets with win / loss
 
-### Add feature to register bet investment
+  - Add leaderboard view
 
-### Change investment model to ...needsVerification
+  - Add Current holdings view (where bets can be closed apart from expiring bets in dashboard)
 
-### Impl. investment validation backend
+  - Add Landing page if you are invited but not invited to any league
 
-### Always return null as jsonbody when req fails
+  - Add landing page if you are not invited att all (with request to join)
 
-### In all commands verify that duplicate doesn't exist
+  - Change investment model to ...needsVerification
 
-### Return memberships of league and keep in store (league admin currently filters on siteadmin)
+  - Impl. investment validation backend
+
+  - Always return null as jsonbody when req fails
+
+  - In all commands verify that duplicate doesn't exist
+
+  - Return memberships of league and keep in store (league admin currently filters on siteadmin)
 
 ## Why is the api folder named apisrc
 This allows for importing types from api during vite serving, if folder is named api the proxy would interpret the path ../api/src/types/things.ts as an api endpoint and not as a served file.

@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const formSchema = toTypedSchema(z.object({
     name: z.string().min(2).max(50),
-    amount: z.number().positive(),
+    price: z.number().positive(),
     buyPosition: z.boolean().default(true),
 }))
 
@@ -27,26 +27,18 @@ const form = useForm({
     validationSchema: formSchema,
 })
 
-const onSubmit = form.handleSubmit(({ name, amount, buyPosition }) => {
+const onSubmit = form.handleSubmit(({ name, price, buyPosition }) => {
     let err = false;
-    if (buyPosition && amount > props.holdings.cashHoldings) {
+    if (buyPosition && price > props.holdings.cashHoldings) {
         err = true;
-        form.setFieldError("amount", "You can't afford this.")
-    }
-
-    if (!buyPosition) {
-        const amountOfSelected = props.holdings.otherInvestmentsHoldings.filter(s => s.name === name)[0].heldAmount;
-        if (amount > amountOfSelected) {
-            err = true;
-            form.setFieldError("amount", "You don't own that much")
-        }
+        form.setFieldError("price", "You can't afford this.")
     }
 
     if (!err) {
         emits(
             "formSubmit",
             name,
-            amount,
+            price,
             buyPosition
         )
     }
@@ -87,7 +79,7 @@ const onSubmit = form.handleSubmit(({ name, amount, buyPosition }) => {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem v-for="holding in holdings.otherInvestmentsHoldings" :value="holding.name">
-                                {{ holding.name }} (owning {{ holding.heldAmount }})
+                                {{ holding.name }} (bought for {{ holding.buyPrice }})
                             </SelectItem>
                         </SelectContent>
                     </Select>
@@ -96,9 +88,9 @@ const onSubmit = form.handleSubmit(({ name, amount, buyPosition }) => {
             </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="amount">
+        <FormField v-slot="{ componentField }" name="price">
             <FormItem class="mt-4">
-                <FormLabel>Amount</FormLabel>
+                <FormLabel>Price</FormLabel>
                 <FormControl>
                     <Input class="text-base" type="number" placeholder="Invested amount" v-bind="componentField" />
                 </FormControl>

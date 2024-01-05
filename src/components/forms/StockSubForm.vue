@@ -53,7 +53,6 @@ const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
     )
   }
 })
-console.log(form.values)
 </script>
 <template>
   <form @submit="onSubmit">

@@ -16,7 +16,6 @@ export const useInvestmentStore = defineStore('investments', () => {
       console.error("Ultra error not good when adding investment.")
       return false
     }
-    console.log(res.data);
     userInvestments.value = res.data.leagueInvestments.investments.filter(i => i.userId === investment.userId)
     userHoldings.value = res.data.leagueInvestments.holdings.filter(h => h.userId === investment.userId)[0]
     leagueHoldings.value = res.data.leagueInvestments.holdings;

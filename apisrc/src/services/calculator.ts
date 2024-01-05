@@ -23,7 +23,9 @@ export async function calculateStockHoldingsForUser(userInvestments: Investment[
     } else {
       stockHoldings[stock.ticker] = {
         ticker: stock.ticker,
-        heldAmount: stock.buyPosition ? stock.amount : -1 * stock.amount,
+        heldAmount: stock.buyPosition 
+          ? stock.amount 
+          : -1 * stock.amount,
         averageBuyPrice: stock.price
       }
     }
@@ -51,13 +53,19 @@ export async function calculateCashHoldingsForUser(investments: Investment[]) {
   if (investments.length === 0) return cash;
   for (const r of investments) {
     if (r.data.type === InvestmentTypes.Stock) {
-      r.data.buyPosition ? cash -= (r.data.amount * r.data.price) : cash += (r.data.amount * r.data.price)
+      r.data.buyPosition 
+        ? cash -= (r.data.amount * r.data.price) 
+        : cash += (r.data.amount * r.data.price)
     }
     else if (r.data.type === InvestmentTypes.Bet) {
-      r.data.result === BetResults.Win ? cash += r.data.amount * r.data.odds : cash -= r.data.amount;
+      r.data.result === BetResults.Win 
+        ? r.data.winAmount
+        : cash -= r.data.amount;
     }
     else if (r.data.type === InvestmentTypes.Other) {
-      r.data.buyPosition ? cash -= r.data.amount : cash += r.data.amount;
+      r.data.buyPosition 
+        ? cash -= r.data.price 
+        : cash += r.data.price;
     }
   }
   return cash;
@@ -72,14 +80,14 @@ export async function calculateOtherInvestmentHoldingsForUser(investments: Inves
     const inv = s.data as OtherInvestment;
     if (Object.keys(otherHoldings).includes(inv.name)) {
       if (inv.buyPosition) {
-        otherHoldings[inv.name].heldAmount += inv.amount;
+        console.warn(`Duplicate name of other investment ${inv.name}, ignoring duplicate.`)
       } else {
-        otherHoldings[inv.name].heldAmount -= inv.amount;
+        delete otherHoldings[inv.name]
       }
     } else {
-      otherHoldings[inv.name] = { name: inv.name, heldAmount: inv.buyPosition ? inv.amount : -1 * inv.amount }
+      otherHoldings[inv.name] = { name: inv.name, buyPrice: inv.price }
     }
   }
-  const stockHoldingList = Object.entries(otherHoldings).map(holding => holding[1]).filter(h => h.heldAmount != 0)
-  return stockHoldingList
+  const otherHoldingsList = Object.entries(otherHoldings).map(holding => holding[1]);
+  return otherHoldingsList
 }

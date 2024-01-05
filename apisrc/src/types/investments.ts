@@ -21,7 +21,7 @@ export type StockInvestment = {
 export type OtherInvestment = {
     type: InvestmentTypes.Other,
     name: string,
-    amount: number,
+    price: number,
     buyPosition: boolean
 }
 
@@ -29,9 +29,10 @@ export type BetInvestment = {
     type: InvestmentTypes.Bet,
     name: string,
     amount: number,
-    odds: number,
+    odds: number | null,
     expiryDate: string,
-    result: BetResults
+    result: BetResults,
+    winAmount: number | null,
 }
 
 export type NotSettledBetInvestMent = Omit<BetInvestment, "result"> & { result: BetResults.NotSettled}
@@ -59,7 +60,7 @@ export type StockHolding = {
 
 export type OtherInvestmentHolding = {
     name: string,
-    heldAmount: number
+    buyPrice: number
 }
 export type Holdings = {
     userId: string,
@@ -73,4 +74,9 @@ export type Holdings = {
 export type LeagueInvestmentsDTO = {
     investments: Investment[],
     holdings: Holdings[]
+}
+
+export type SettleBetDTO = {
+    betId: string,
+    winAmount: number
 }

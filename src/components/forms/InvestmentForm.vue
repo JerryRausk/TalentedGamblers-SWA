@@ -48,7 +48,7 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
     }
 }
 
-async function handleBetInvestment(name: string, amount: number, odds: number, expiryDate: string) {
+async function handleBetInvestment(name: string, amount: number, odds: number | null, expiryDate: string) {
     const invres = await investmentStore.addInvestment({
         id: "",
         userId: props.userEmail,
@@ -62,7 +62,8 @@ async function handleBetInvestment(name: string, amount: number, odds: number, e
             expiryDate,
             odds,
             name,
-            result: BetResults.NotSettled
+            result: BetResults.NotSettled,
+            winAmount: null
         }
     })
     if(!invres) {
@@ -72,7 +73,7 @@ async function handleBetInvestment(name: string, amount: number, odds: number, e
     }
 }
 
-async function handleOtherInvestment(name: string, amount: number, buyPosition: boolean) {
+async function handleOtherInvestment(name: string, price: number, buyPosition: boolean) {
     const invres = await investmentStore.addInvestment({
         id: "",
         userId: props.userEmail,
@@ -83,7 +84,7 @@ async function handleOtherInvestment(name: string, amount: number, buyPosition: 
         data: {
             type: InvestmentTypes.Other,
             buyPosition,
-            amount,
+            price,
             name
         }
     })

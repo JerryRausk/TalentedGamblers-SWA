@@ -23,11 +23,11 @@ const router = useRouter();
 const loading = ref(true);
 const expiringBets = computed(() => {
   if (!investmentStore.userHoldings || investmentStore.userHoldings.notSettledBets.length === 0) return []
-  console.log(new Date(investmentStore.userHoldings.notSettledBets[0].expiryDate).getTime() - new Date().getTime())
   return investmentStore.userHoldings.notSettledBets.filter(b => 
   (new Date(b.expiryDate).getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24 < 1
   ).sort((a, b) => new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime())
 })
+
 watch(() => leagueStore.activeLeague, async () => {
   if (leagueStore.activeLeague && props.user.email) {
     if (!investmentStore.leagueHoldings || !investmentStore.userHoldings)

@@ -9,7 +9,7 @@ import { watch } from 'vue';
 
 const { isAuthenticated, user, isLoading } = useAuth0();
 const leagueStore = useLeagueStore();
-watch([isLoading, leagueStore.activeLeague], () => {
+watch([isLoading, () => leagueStore.activeLeague], () => {
     // Done loading auth stuff but no active league yet
     if(!isLoading && !leagueStore.activeLeague) {
         leagueStore.refreshLeagues();

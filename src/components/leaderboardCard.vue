@@ -20,7 +20,7 @@ function leaderboardDetailsText(leagueHoldings: Holdings) {
   
   if (leagueHoldings.stockHoldings.length > 0) invested += leagueHoldings.stockHoldings.reduce((acc, curr) => acc += curr.averageBuyPrice * curr.heldAmount, 0);
   
-  if (leagueHoldings.otherInvestmentsHoldings.length > 0) invested += leagueHoldings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.heldAmount, 0)
+  if (leagueHoldings.otherInvestmentsHoldings.length > 0) invested += leagueHoldings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
   
   if(invested > 0) holdingTexts.push(`+ ${invested} invested`)
   return holdingTexts
