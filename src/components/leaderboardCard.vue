@@ -11,9 +11,9 @@ defineProps<{
 
 const isOpen = ref(false);
 function leaderboardDetailsText(leagueHoldings: Holdings) {
-  let holdingTexts = []
-
-  if (leagueHoldings.cashHoldings > 0) holdingTexts.push(`${leagueHoldings.cashHoldings.toLocaleString()} in cash`)
+  const texts = []
+  
+  if(leagueHoldings.cashHoldings > 0) texts.push(`${leagueHoldings.cashHoldings.toLocaleString()} in cash`)
   
   let invested = 0;
   if (leagueHoldings.notSettledBets.length > 0) invested += leagueHoldings.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0);
@@ -22,14 +22,22 @@ function leaderboardDetailsText(leagueHoldings: Holdings) {
   
   if (leagueHoldings.otherInvestmentsHoldings.length > 0) invested += leagueHoldings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
   
-  if(invested > 0) holdingTexts.push(`+ ${invested} invested`)
-  return holdingTexts
+  if(invested > 0) texts.push(`${invested} invested`)
+  
+  return texts
+}
+
+function sumHoldings(holdings: Holdings) {
+  return holdings.cashHoldings 
+    + holdings.stockHoldings.reduce((acc, curr) => acc += curr.heldAmount * curr.averageBuyPrice,0) 
+    + holdings.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0) 
+    + holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
 }
 </script>
 <template>
   <div>
     <div @click="isOpen = !isOpen">
-      <p>{{ holdings.userId.split("@")[0] }}</p>
+      <p>{{ holdings.userId.split("@")[0] }} <span class="ml-2">{{ sumHoldings(holdings) }}</span></p>
       <p class="text-xs text-muted-foreground">{{ leaderboardDetailsText(holdings).join(", ") }}</p>
     </div>
     <div @click="isOpen=false" class="flex flex-row flex-wrap gap-2 mt-3 pb-2 border-b" v-if="isOpen">

@@ -40,6 +40,27 @@ const latestInvestments = computed(() => {
   if (!investmentStore.leagueInvestments) return []
   return investmentStore.leagueInvestments.slice(0, 3)
 })
+
+const leaderBoardSorted = computed(() => {
+  if(!investmentStore.leagueHoldings) return [];
+  investmentStore.leagueHoldings.sort((a, b) => {
+    const aHoldings = a.cashHoldings 
+      + a.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0) 
+      + a.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0) 
+      + a.stockHoldings.reduce((acc, curr) => acc += curr.averageBuyPrice * curr.heldAmount, 0)
+
+    const bHoldings = b.cashHoldings 
+      + b.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0) 
+      + b.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0) 
+      + b.stockHoldings.reduce((acc, curr) => acc += curr.averageBuyPrice * curr.heldAmount, 0)
+
+    console.log(`${a.userId} is holding ${aHoldings}`)
+    console.log(`${b.userId} is holding ${bHoldings}, cash: ${b.cashHoldings}`)
+
+    return bHoldings - aHoldings
+  })
+  return investmentStore.leagueHoldings
+});
 </script>
 
 <template>
@@ -51,7 +72,7 @@ const latestInvestments = computed(() => {
           <div class="border-l pl-2">
             <ol class="text-sm list-decimal ml-4 flex flex-col gap-2">
               <Skeleton v-if="loading" v-for="_ in [1,2,3]" class="w-36 h-10 rounded ml-[-1rem]" />
-            <li v-for="lh in investmentStore.leagueHoldings">
+            <li v-for="lh in leaderBoardSorted">
               <LeaderboardCard :holdings="lh" />
             </li>
           </ol>

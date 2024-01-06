@@ -11,16 +11,19 @@ import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { Calendar } from '@/src/components/ui/calendar'
 import { ref } from "vue";
 import { Checkbox } from "@/src/components/ui/checkbox";
+import { Holdings } from '@/types/investments'
 
 const emits = defineEmits<{
   (e: "formSubmit", name: string, amount: number, odds: number | null, expiryDate: string): void
   (e: "cancel"): void
 }>();
-
+const props = defineProps<{
+  holdings: Holdings
+}>();
 const hasOdds = ref(false);
 const formSchema = toTypedSchema(z.object({
   name: z.string().min(2).max(50),
-  amount: z.number().positive(),
+  amount: z.number().positive().max(props.holdings.cashHoldings),
   odds: z.number().positive().optional(),
   expiryDate: z.date()
 }))
