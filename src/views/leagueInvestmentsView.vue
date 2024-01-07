@@ -23,7 +23,10 @@ onMounted(async () => {
 
 <template>
     <div class="p-2 flex flex-col gap-2">
-        <div v-for="li in sortedInvestments">
+        <div v-if="sortedInvestments.length === 0">
+            <p class="text-center">No investments in {{ activeLeague.name }} yet</p>
+        </div>
+        <div v-else v-for="li in sortedInvestments">
             <InvestmentCard :investment="li" />
         </div>
     </div>

@@ -113,10 +113,10 @@ onMounted(async () => {
               League Admin
             </DropdownMenuItem>
             <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/leagueInvestments">
-              League Investments
+              Investments
             </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/">
-              Activities
+            <DropdownMenuItem class="cursor-pointer h-12" :as="RouterLink" to="/leagueleaderboard">
+              Leaderboard
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
