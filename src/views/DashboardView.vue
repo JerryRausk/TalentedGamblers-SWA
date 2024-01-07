@@ -96,7 +96,7 @@ const leaderBoardSorted = computed(() => {
         <a @click="router.push('leagueInvestments')" class="text-blue-600 text-sm">> Go to all investments</a>
       </div>
     </div>
-    <div v-if="investmentStore.userHoldings && !loading" class="flex flex-col rounded p-2">
+    <div v-if="investmentStore.userHoldings !== null && !loading" class="flex flex-col rounded p-2">
       <div class="flex flex-row justify-between">
         <h4 class="text-sky-300">Holdings</h4>
         <p class="text-sm">Cash: {{ investmentStore.userHoldings.cashHoldings.toLocaleString() }}</p>

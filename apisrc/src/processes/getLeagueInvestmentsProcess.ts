@@ -1,18 +1,17 @@
 import { calculateCashHoldingsForUser, calculateBetHoldingForUser, calculateOtherInvestmentHoldingsForUser, calculateStockHoldingsForUser } from "../services/calculator";
 import { getLeagueInvestmentsQuery } from "../queries/getLeagueInvestmentsQuery";
 import { Holdings, LeagueInvestmentsDTO } from "../types/investments";
-
+import { getLeagueMembersQuery } from "../queries/getLeagueMembersQuery"
 
 export async function getLeagueInvestmentsProcess(leagueId: string): Promise<LeagueInvestmentsDTO> {
     const investments = await getLeagueInvestmentsQuery(leagueId);
-
-    const uniqueUsers = new Set(investments.map(i => i.userId))
+    const leagueMembers = await getLeagueMembersQuery(leagueId);
     const holdings = [] as Holdings[];
-    for(const userId of uniqueUsers) {
-        const currUserInvestments = investments.filter(i => i.userId === userId)
+    for(const member of leagueMembers) {
+        const currUserInvestments = investments.filter(i => i.userId === member.userId)
         holdings.push(
             {
-                userId,
+                userId: member.userId,
                 leagueId,
                 stockHoldings: await calculateStockHoldingsForUser(currUserInvestments),
                 cashHoldings: await calculateCashHoldingsForUser(currUserInvestments),
