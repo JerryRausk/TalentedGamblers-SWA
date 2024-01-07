@@ -10,13 +10,15 @@ import { createPinia } from 'pinia'
 import {auth0} from "./auth0.js"
 import siteAdminView from './views/siteAdminView.vue';
 import leagueInvestmentView from "./views/leagueInvestmentsView.vue"
+import leagueLeaderboard from "./views/leagueLeaderboardView.vue"
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: DashboardView },
   { path: '/profile', component: ProfileView, beforeEnter: authGuard },
   { path: '/leagueAdmin', component: LeagueAdminView, beforeEnter: authGuard },
   { path: '/siteAdmin', component: siteAdminView, beforeEnter: authGuard },
-  { path: '/leagueInvestments', component: leagueInvestmentView, beforeEnter: authGuard }
+  { path: '/leagueInvestments', component: leagueInvestmentView, beforeEnter: authGuard },
+  { path: '/leagueLeaderboard', component: leagueLeaderboard, beforeEnter: authGuard }
 
 ]
 

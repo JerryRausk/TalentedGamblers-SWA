@@ -24,7 +24,7 @@ const router = useRouter();
 
 const loading = ref(true);
 const expiringBets = computed(() => {
-  if(!investmentStore.userHoldings) return []
+  if (!investmentStore.userHoldings) return []
   return investmentStore.userHoldings.betHoldings.filter(b =>
     (new Date((b.data as BetInvestment).expiryDate).getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24 < 1
   ).sort((a, b) => new Date((a.data as BetInvestment).expiryDate).getTime() - new Date((b.data as BetInvestment).expiryDate).getTime())
@@ -40,10 +40,10 @@ watch(() => leagueStore.activeLeague, async () => {
 
 const latestInvestments = computed(() => {
   if (!investmentStore.leagueInvestments) return []
-  return investmentStore.leagueInvestments.sort((a,b ) => a.date < b.date ? 1 : -1).slice(0, 3)
+  return investmentStore.leagueInvestments.sort((a, b) => a.date < b.date ? 1 : -1).slice(0, 3)
 })
 
-const leaderBoardSorted = computed(() => {
+const top3LeaderBoardSorted = computed(() => {
   if (!investmentStore.leagueHoldings) return [];
   investmentStore.leagueHoldings.sort((a, b) => {
     const aHoldings = a.cashHoldings
@@ -58,7 +58,7 @@ const leaderBoardSorted = computed(() => {
 
     return bHoldings - aHoldings
   })
-  return investmentStore.leagueHoldings
+  return investmentStore.leagueHoldings.slice(0, 3)
 });
 </script>
 
@@ -67,27 +67,29 @@ const leaderBoardSorted = computed(() => {
     <div class="flex-row gap-4">
       <div class="flex-col w-full">
         <div class=" rounded p-2  gap-2 flex flex-col">
-          <h4 class="text-sky-300">Leaderboard</h4>
+          <h4 class="font-bold">Top 3 investors</h4>
           <div class="border-l pl-2">
             <ol class="text-sm list-decimal ml-4 flex flex-col gap-2">
               <Skeleton v-if="loading" v-for="_ in [1, 2, 3]" class="w-36 h-10 rounded ml-[-1rem]" />
-              <li v-for="lh in leaderBoardSorted">
-                <LeaderboardCard :holdings="lh"/>
+              <li v-for="lh in top3LeaderBoardSorted">
+                <LeaderboardCard :holdings="lh" />
               </li>
             </ol>
           </div>
+          <a @click="router.push('leagueLeaderboard')" class="text-blue-600 text-sm">> Go to leaderboard</a>
         </div>
       </div>
     </div>
+
     <div v-if="expiringBets.length > 0" class="flex flex-col p-2 w-full">
-      <h4 class="text-sky-300">Bets to close</h4>
+      <h4 class="font-bold">Bets to close</h4>
       <div class="flex flex-row flex-wrap gap-2">
         <BetHoldingCard v-for="b in expiringBets" :show-actions="true" :investment="b" />
       </div>
 
     </div>
     <div class="flex flex-col rounded p-2 gap-2">
-      <h4 class="text-sky-300">Investments</h4>
+      <h4 class="font-bold">Investments</h4>
       <Skeleton v-if="loading" v-for="_ in [1, 2, 3]" class="w-full h-14 rounded" />
       <div v-for="li in latestInvestments">
         <InvestmentCard :investment="li" />
@@ -96,21 +98,22 @@ const leaderBoardSorted = computed(() => {
         <a @click="router.push('leagueInvestments')" class="text-blue-600 text-sm">> Go to all investments</a>
       </div>
     </div>
-    <div v-if="investmentStore.userHoldings && !loading" class="flex flex-col rounded p-2">
+    <div v-if="investmentStore.userHoldings !== null && !loading" class="flex flex-col rounded p-2">
       <div class="flex flex-row justify-between">
-        <h4 class="text-sky-300">Holdings</h4>
+        <h4 class="font-bold">My holdings</h4>
         <p class="text-sm">Cash: {{ investmentStore.userHoldings.cashHoldings.toLocaleString() }}</p>
       </div>
       <hr class="my-2">
       <div class="flex flex-row gap-2 flex-wrap">
         <StockHoldingCard v-for="h in investmentStore.userHoldings.stockHoldings" :stock-holding="h" />
         <BetHoldingCard v-for="b in investmentStore.userHoldings.betHoldings" :investment="b" :show-actions="false" />
-        <OtherInvestmentHoldingCard v-for="o in investmentStore.userHoldings.otherInvestmentsHoldings" :other-holding="o" />
+        <OtherInvestmentHoldingCard v-for="o in investmentStore.userHoldings.otherInvestmentsHoldings"
+          :other-holding="o" />
       </div>
     </div>
     <div v-else class="flex flex-col border rounded p-2">
       <div class="flex flex-row justify-between">
-        <h4 class="text-sky-300">Holdings</h4>
+        <h4 class="font-bold">Holdings</h4>
         <Skeleton class="w-20 h-6 rounded" />
       </div>
       <hr class="my-2">
