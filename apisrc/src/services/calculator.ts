@@ -1,4 +1,4 @@
-import { BetResults, Investment, InvestmentTypes, NotSettledBetInvestMent, OtherInvestment, OtherInvestmentHolding, StockHolding, StockInvestment } from "../types/investments";
+import { BetInvestment, Investment, InvestmentTypes, OtherInvestment, OtherInvestmentHolding, StockHolding, StockInvestment } from "../types/investments";
 
 export async function calculateStockHoldingsForUser(userInvestments: Investment[]) {
 
@@ -34,18 +34,20 @@ export async function calculateStockHoldingsForUser(userInvestments: Investment[
   return stockHoldingList
 }
 
-export async function calculateNotSettledBetsForUser(investments: Investment[]) {
+export async function calculateBetHoldingForUser(investments: Investment[]) {
+  /* Returns all investment of type bet that has not yet been closed */
+  const betInvestments = investments.filter(i => i.data.type === InvestmentTypes.Bet);
+  if (betInvestments.length === 0) return [];
 
-  const notSettledBets = [] as NotSettledBetInvestMent[]
+  const closedBetsIds = betInvestments.filter(b => b.data.type === InvestmentTypes.Bet && b.data.open === false).map(b => (b.data as BetInvestment).betId);
+  const openBets = betInvestments.filter(b => b.data.type === InvestmentTypes.Bet && b.data.open === true);
 
-  for (const i of investments) {
-    if (i.data.type === InvestmentTypes.Bet) {
-      if (i.data.result === BetResults.NotSettled) {
-        notSettledBets.push(i.data as NotSettledBetInvestMent);
-      }
-    }
+  const betHoldings = [] as Investment[]
+  for(const b of openBets) {
+    if(!closedBetsIds.includes((b.data as BetInvestment).betId)) betHoldings.push(b)
   }
-  return notSettledBets;
+
+  return betHoldings;
 }
 
 export async function calculateCashHoldingsForUser(investments: Investment[]) {
@@ -58,9 +60,9 @@ export async function calculateCashHoldingsForUser(investments: Investment[]) {
         : cash += (r.data.amount * r.data.price)
     }
     else if (r.data.type === InvestmentTypes.Bet) {
-      r.data.result === BetResults.Win 
-        ? r.data.winAmount
-        : cash -= r.data.amount;
+      r.data.open === true
+        ? cash -= r.data.amount
+        : cash += r.data.amount;
     }
     else if (r.data.type === InvestmentTypes.Other) {
       r.data.buyPosition 

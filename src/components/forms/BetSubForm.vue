@@ -9,7 +9,7 @@ import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { Calendar } from '@/src/components/ui/calendar'
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Holdings } from '@/types/investments'
 
@@ -49,6 +49,10 @@ const onSubmit = form.handleSubmit(({ name: name, amount, odds, expiryDate }) =>
 }
 )
 
+const calendarIsOpen = ref(false);
+watch(() => form.values.expiryDate, () => {
+  calendarIsOpen.value = false;
+})
 </script>
 <template>
   <form @submit="onSubmit">
@@ -74,7 +78,7 @@ const onSubmit = form.handleSubmit(({ name: name, amount, odds, expiryDate }) =>
 
     <FormField v-slot="{ componentField }" name="odds">
       <FormItem class="mt-4">
-        <FormLabel>Odds (if fixed odds)</FormLabel>
+        <FormLabel>Odds (if fixed)</FormLabel>
 
         <FormControl>
           <div class="flex flex-row gap-2 align-middle h-10">
@@ -92,7 +96,7 @@ const onSubmit = form.handleSubmit(({ name: name, amount, odds, expiryDate }) =>
     <FormField v-slot="{ componentField }" name="expiryDate">
       <FormItem class="mt-4">
         <FormLabel>Expires at</FormLabel>
-        <Popover>
+        <Popover v-model:open="calendarIsOpen">
           <PopoverTrigger as-child>
             <FormControl>
               <Button class="text-base" :variant="'outline'" :class="cn(

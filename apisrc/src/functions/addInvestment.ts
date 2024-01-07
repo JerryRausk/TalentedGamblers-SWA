@@ -4,12 +4,14 @@ import { User } from "@auth0/auth0-vue";
 import { LeagueMembership } from "../types/league.js";
 import { randomUUID } from "crypto";
 import { addInvestmentCommand  } from "../commands/addInvestmentCommand.js";
-import { AddInvestmentDTO, Investment, Holdings } from "../types/investments.js";
+import { AddInvestmentDTO, Investment, Holdings, InvestmentTypes } from "../types/investments.js";
 import { getLeagueInvestmentsProcess } from "../processes/getLeagueInvestmentsProcess.js";
 
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const inv = await request.json() as Investment
-
+    if(inv.data.type === InvestmentTypes.Bet) {
+        inv.data.betId = randomUUID()
+    }
     const leagueMembershipIds = leagueMemberships.map(l => l.leagueId)
     if(!leagueMembershipIds.includes(inv.leagueId)) {
         console.error(`User ${user.email} tried to add investment to league ${inv.leagueId} without membership.`)

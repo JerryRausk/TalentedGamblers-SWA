@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Holdings } from '@/types/investments';
+import { Holdings, BetInvestment } from '@/types/investments';
 import { ref } from "vue";
 import StockHoldingCard from "@/src/components/stockHoldingCard.vue";
 import BetHoldingCard from "@/src/components/betHoldingCard.vue";
@@ -10,17 +10,18 @@ defineProps<{
 }>();
 
 const isOpen = ref(false);
-function leaderboardDetailsText(leagueHoldings: Holdings) {
+
+function leaderboardDetailsText(holdings: Holdings) {
   const texts = []
   
-  if(leagueHoldings.cashHoldings > 0) texts.push(`${leagueHoldings.cashHoldings.toLocaleString()} in cash`)
+  if(holdings.cashHoldings > 0) texts.push(`${holdings.cashHoldings.toLocaleString()} in cash`)
   
   let invested = 0;
-  if (leagueHoldings.notSettledBets.length > 0) invested += leagueHoldings.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0);
+  if (holdings.betHoldings.length > 0) invested += holdings.betHoldings.reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0);
   
-  if (leagueHoldings.stockHoldings.length > 0) invested += leagueHoldings.stockHoldings.reduce((acc, curr) => acc += curr.averageBuyPrice * curr.heldAmount, 0);
+  if (holdings.stockHoldings.length > 0) invested += holdings.stockHoldings.reduce((acc, curr) => acc += curr.averageBuyPrice * curr.heldAmount, 0);
   
-  if (leagueHoldings.otherInvestmentsHoldings.length > 0) invested += leagueHoldings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
+  if (holdings.otherInvestmentsHoldings.length > 0) invested += holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
   
   if(invested > 0) texts.push(`${invested} invested`)
   
@@ -30,7 +31,7 @@ function leaderboardDetailsText(leagueHoldings: Holdings) {
 function sumHoldings(holdings: Holdings) {
   return holdings.cashHoldings 
     + holdings.stockHoldings.reduce((acc, curr) => acc += curr.heldAmount * curr.averageBuyPrice,0) 
-    + holdings.notSettledBets.reduce((acc, curr) => acc += curr.amount, 0) 
+    + holdings.betHoldings.reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0) 
     + holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
 }
 </script>
@@ -42,7 +43,7 @@ function sumHoldings(holdings: Holdings) {
     </div>
     <div @click="isOpen=false" class="flex flex-row flex-wrap gap-2 mt-3 pb-2 border-b" v-if="isOpen">
       <StockHoldingCard v-for="h in holdings.stockHoldings" :stock-holding="h" />
-      <BetHoldingCard v-for="b in holdings.notSettledBets" :not-settled-bet="b" />
+      <BetHoldingCard v-for="b in holdings.betHoldings" :investment="b" :show-actions="false"/>
       <OtherHoldingCard v-for="o in holdings.otherInvestmentsHoldings" :other-holding="o" />
     </div>
   </div>

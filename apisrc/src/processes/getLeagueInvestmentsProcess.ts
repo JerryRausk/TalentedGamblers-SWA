@@ -1,4 +1,4 @@
-import { calculateCashHoldingsForUser, calculateNotSettledBetsForUser, calculateOtherInvestmentHoldingsForUser, calculateStockHoldingsForUser } from "../services/calculator";
+import { calculateCashHoldingsForUser, calculateBetHoldingForUser, calculateOtherInvestmentHoldingsForUser, calculateStockHoldingsForUser } from "../services/calculator";
 import { getLeagueInvestmentsQuery } from "../queries/getLeagueInvestmentsQuery";
 import { Holdings, LeagueInvestmentsDTO } from "../types/investments";
 
@@ -16,7 +16,7 @@ export async function getLeagueInvestmentsProcess(leagueId: string): Promise<Lea
                 leagueId,
                 stockHoldings: await calculateStockHoldingsForUser(currUserInvestments),
                 cashHoldings: await calculateCashHoldingsForUser(currUserInvestments),
-                notSettledBets: await calculateNotSettledBetsForUser(currUserInvestments),
+                betHoldings: await calculateBetHoldingForUser(currUserInvestments),
                 otherInvestmentsHoldings: await calculateOtherInvestmentHoldingsForUser(currUserInvestments)
             }
         )

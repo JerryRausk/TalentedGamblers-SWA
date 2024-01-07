@@ -8,6 +8,7 @@ type Endpoint = "getLeagues"
     | "addInvitedUser" 
     | "addLeagueMembership"
     | "getLeagueInvestments"
+    | "addBetSettled"
     
 export async function postJson<Tin, Tout>(endpoint: Endpoint, data: Tin) {
     try

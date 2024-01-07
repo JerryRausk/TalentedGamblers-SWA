@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { Button } from '@/src/components/ui/button'
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { cn } from "@/src/lib/utils"
 import { Calendar } from '@/src/components/ui/calendar'
@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/pop
 import StockSubForm from './StockSubForm.vue';
 import BetSubForm from './BetSubForm.vue';
 import OtherInvestmentSubForm from "./OtherInvestmentSubForm.vue"
-import { InvestmentTypes, BetResults } from '@/types/investments';
+import { InvestmentTypes } from '@/types/investments';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/src/components/ui/dialog'
 import { useInvestmentStore } from "@/src/stores/InvestmentStore";
 import { League } from "@/types/league"
@@ -32,8 +32,6 @@ async function handleStockInvestment(buyPosition: boolean, ticker: string, amoun
         userId: props.userEmail,
         leagueId: props.league.id,
         date: investmentDate.value,
-        verified: false,
-        verifiedBy: null,
         data: {
             type: InvestmentTypes.Stock,
             amount,
@@ -54,16 +52,14 @@ async function handleBetInvestment(name: string, amount: number, odds: number | 
         userId: props.userEmail,
         leagueId: props.league.id,
         date: investmentDate.value,
-        verified: false,
-        verifiedBy: null,
         data: {
             type: InvestmentTypes.Bet,
+            betId: "",
             amount,
             expiryDate,
             odds,
             name,
-            result: BetResults.NotSettled,
-            winAmount: null
+            open: true
         }
     })
     if(!invres) {
@@ -79,8 +75,6 @@ async function handleOtherInvestment(name: string, price: number, buyPosition: b
         userId: props.userEmail,
         leagueId: props.league.id,
         date: investmentDate.value,
-        verified: false,
-        verifiedBy: null,
         data: {
             type: InvestmentTypes.Other,
             buyPosition,
@@ -95,6 +89,10 @@ async function handleOtherInvestment(name: string, price: number, buyPosition: b
     }
 }
 
+const calendarIsOpen = ref(false);
+watch(investmentDate, () => {
+    calendarIsOpen.value = false;
+})
 </script>
 
 <template>
@@ -126,7 +124,7 @@ async function handleOtherInvestment(name: string, price: number, buyPosition: b
                         </SelectItem>
                     </SelectContent>
                 </Select>
-                <Popover>
+                <Popover v-model:open="calendarIsOpen">
                     <PopoverTrigger as-child>
                         <Button class="text-base" :variant="'outline'" :class="cn(
                             'justify-start text-left font-normal',
@@ -136,8 +134,8 @@ async function handleOtherInvestment(name: string, price: number, buyPosition: b
                             <span>{{ investmentDate }}</span>
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent class="w-auto p-0">
-                        <Calendar :masks="{ modelValue: 'YYYY-MM-DD' }" v-model.string="investmentDate" />
+                    <PopoverContent  class="w-auto p-0">
+                            <Calendar  :masks="{ modelValue: 'YYYY-MM-DD' }" v-model.string="investmentDate" />
                     </PopoverContent>
                 </Popover>
             </div>

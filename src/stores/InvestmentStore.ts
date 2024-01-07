@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { Investment, AddInvestmentDTO, Holdings, LeagueInvestmentsDTO } from "@/types/investments.js"
+import { Investment, AddInvestmentDTO, Holdings, LeagueInvestmentsDTO, SettleBetDTO } from "@/types/investments.js"
 import { postJson } from "@/src/services/apiService.js";
-
 
 export const useInvestmentStore = defineStore('investments', () => {
   const userHoldings = ref<Holdings | null>(null)
@@ -16,10 +15,9 @@ export const useInvestmentStore = defineStore('investments', () => {
       console.error("Ultra error not good when adding investment.")
       return false
     }
-    userInvestments.value = res.data.leagueInvestments.investments.filter(i => i.userId === investment.userId)
-    userHoldings.value = res.data.leagueInvestments.holdings.filter(h => h.userId === investment.userId)[0]
-    leagueHoldings.value = res.data.leagueInvestments.holdings;
-    leagueInvestments.value = res.data.leagueInvestments.investments;
+
+    _updateStoreData(res.data.leagueInvestments, investment.userId);
+
     return true;
   }
 
@@ -36,10 +34,7 @@ export const useInvestmentStore = defineStore('investments', () => {
   }
 
   async function refreshInvestmentData(leagueId: string, userId: string) {
-    leagueInvestments.value = [];
-    leagueHoldings.value = null;
-    userInvestments.value = [];
-    userHoldings.value = null;
+    _resetStoreData()
     const res = await postJson<any, LeagueInvestmentsDTO>("getLeagueInvestments", {
       leagueId
     })
@@ -47,10 +42,9 @@ export const useInvestmentStore = defineStore('investments', () => {
       console.error("Ultra error not good when fetching league investments");
       return false;
     }
-    leagueInvestments.value = res.data.investments;
-    leagueHoldings.value = res.data.holdings;
-    userHoldings.value = res.data.holdings.filter(h => h.userId === userId)[0];
-    userInvestments.value = res.data.investments.filter(i => i.userId === userId);
+    
+    _updateStoreData(res.data, userId)
+
     return true;
   }
 
@@ -64,5 +58,35 @@ export const useInvestmentStore = defineStore('investments', () => {
     }
     userHoldings.value = res.data;
   }
-  return { investments: userInvestments, leagueInvestments, leagueHoldings, addInvestment, userHoldings, refreshInvestments, refreshHoldings, refreshInvestmentData }
+
+  function _updateStoreData(leagueInvDto: LeagueInvestmentsDTO, userId: string) {
+    leagueInvestments.value = leagueInvDto.investments;
+    leagueHoldings.value = leagueInvDto.holdings;
+    userHoldings.value = leagueInvDto.holdings.filter(h => h.userId === userId)[0];
+    userInvestments.value = leagueInvDto.investments.filter(i => i.userId === userId);
+  }
+  
+  function _resetStoreData() {
+    leagueInvestments.value = [];
+    leagueHoldings.value = null;
+    userInvestments.value = [];
+    userHoldings.value = null;
+  }
+
+  async function settleBet(investmentId: string, winAmount: number, userId: string) {
+    const dto = {
+      investmentId, winAmount    
+    } satisfies SettleBetDTO
+
+    const res = await postJson<SettleBetDTO, LeagueInvestmentsDTO>("addBetSettled", dto)
+    
+    if(!res.success) {
+      console.error("Ultra error not good when settling bet");
+      return false;
+    }
+
+    _updateStoreData(res.data, userId)
+    return true;
+  }
+  return { userInvestments, leagueInvestments, leagueHoldings, addInvestment, userHoldings, refreshInvestments, refreshHoldings, refreshInvestmentData, settleBet }
 })

@@ -4,12 +4,6 @@ export enum InvestmentTypes {
     Other = "other"
 }
 
-export enum BetResults {
-    Win = "win",
-    Loss = "loss",
-    NotSettled = "not settled"
-}
-
 export type StockInvestment = {
     type: InvestmentTypes.Stock,
     buyPosition: boolean,
@@ -25,25 +19,11 @@ export type OtherInvestment = {
     buyPosition: boolean
 }
 
-export type BetInvestment = {
-    type: InvestmentTypes.Bet,
-    name: string,
-    amount: number,
-    odds: number | null,
-    expiryDate: string,
-    result: BetResults,
-    winAmount: number | null,
-}
-
-export type NotSettledBetInvestMent = Omit<BetInvestment, "result"> & { result: BetResults.NotSettled}
-
 export type Investment = {
   id: string,
   userId: string,
   leagueId: string,
   date: string,
-  verified: boolean,
-  verifiedBy: string | null
   data: StockInvestment | BetInvestment | OtherInvestment
 }
 
@@ -67,7 +47,7 @@ export type Holdings = {
     leagueId: string,
     stockHoldings: StockHolding[],
     cashHoldings: number,
-    notSettledBets: NotSettledBetInvestMent[],
+    betHoldings: Investment[],
     otherInvestmentsHoldings: OtherInvestmentHolding[],
 }
 
@@ -76,7 +56,22 @@ export type LeagueInvestmentsDTO = {
     holdings: Holdings[]
 }
 
-export type SettleBetDTO = {
+export type BetInvestment = {
+    type: InvestmentTypes.Bet,
+    name: string,
+    amount: number,
+    odds: number | null,
+    expiryDate: string,
     betId: string,
+    open: boolean /* When bet is placed it is open, when bet is closed a trade with same  */
+}
+
+export type SettleBetDTO = {
+    investmentId: string,
     winAmount: number
+}
+
+export enum BetResults {
+    Win = "win",
+    Loss = "loss"
 }
