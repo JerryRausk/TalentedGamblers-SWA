@@ -5,6 +5,7 @@ import { useInvestmentStore } from '@/src/stores/InvestmentStore.js';
 import { ref, computed, onMounted } from "vue";
 import { User } from '@auth0/auth0-vue';
 import { League } from "@/types/league"
+import { Skeleton } from "@/src/components/ui/skeleton"
 
 const props = defineProps<{
   activeLeague: League,
@@ -12,7 +13,7 @@ const props = defineProps<{
 }>();
 const investmentStore = useInvestmentStore();
 
-const loading = ref(false);
+const loading = ref(true);
 const leaderBoardSorted = computed(() => {
   if (!investmentStore.leagueHoldings) return [];
   investmentStore.leagueHoldings.sort((a, b) => {
@@ -31,9 +32,13 @@ const leaderBoardSorted = computed(() => {
   return investmentStore.leagueHoldings
 });
 
-onMounted(() => {
-    if(!props.user.email) return;
-    investmentStore.refreshInvestmentData(props.activeLeague.id, props.user.email)
+onMounted(async () => {
+    if(!props.user.email) {
+      loading.value = false;
+      return;
+    }
+    await investmentStore.refreshInvestmentData(props.activeLeague.id, props.user.email);
+    loading.value = false;
 })
 </script>
 
@@ -45,7 +50,7 @@ onMounted(() => {
           <div class="border-l pl-2">
             <ol class="text-sm list-decimal ml-4 flex flex-col gap-2">
               <Skeleton v-if="loading" v-for="_ in [1, 2, 3]" class="w-36 h-10 rounded ml-[-1rem]" />
-              <li v-for="lh in leaderBoardSorted">
+              <li v-else v-for="lh in leaderBoardSorted">
                 <LeaderboardCard :holdings="lh"/>
               </li>
             </ol>
