@@ -23,16 +23,17 @@ function leaderboardDetailsText(holdings: Holdings) {
 
   if (holdings.otherInvestmentsHoldings.length > 0) invested += holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
 
-  if (invested > 0) texts.push(`${invested} invested`)
+  if (invested > 0) texts.push(`${invested.toLocaleString()} invested`)
 
   return texts
 }
 
 function sumHoldings(holdings: Holdings) {
-  return holdings.cashHoldings
+  const holdingsSum = holdings.cashHoldings
     + holdings.stockHoldings.reduce((acc, curr) => acc += curr.heldAmount * curr.averageBuyPrice, 0)
     + holdings.betHoldings.reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0)
     + holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
+	return holdingsSum.toLocaleString();
 }
 </script>
 <template>
