@@ -29,10 +29,11 @@ function leaderboardDetailsText(holdings: Holdings) {
 }
 
 function sumHoldings(holdings: Holdings) {
-  return holdings.cashHoldings
+  const holdingsSum = holdings.cashHoldings
     + holdings.stockHoldings.reduce((acc, curr) => acc += curr.heldAmount * curr.averageBuyPrice, 0)
     + holdings.betHoldings.reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0)
     + holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
+	return holdingsSum.toLocaleString();
 }
 </script>
 <template>
