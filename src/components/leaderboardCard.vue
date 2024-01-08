@@ -23,7 +23,7 @@ function leaderboardDetailsText(holdings: Holdings) {
 
   if (holdings.otherInvestmentsHoldings.length > 0) invested += holdings.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
 
-  if (invested > 0) texts.push(`${invested} invested`)
+  if (invested > 0) texts.push(`${invested.toLocaleString()} invested`)
 
   return texts
 }
