@@ -21,7 +21,7 @@ const formSchema = toTypedSchema(z.object({
   ticker: z.string().min(2).max(50),
   buyPosition: z.boolean().default(true),
   amount: z.number().int().positive(),
-  price: z.number().positive()
+  price: z.number().positive().max(props.holdings.cashHoldings, "You can't afford that")
 }))
 
 const form = useForm({
@@ -30,10 +30,6 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
   let err = false;
-  if (buyPosition && amount * price > props.holdings.cashHoldings) {
-    err = true;
-    form.setFieldError("amount", "You can't afford this.")
-  }
 
   if (!buyPosition) {
     const heldOfSelected = props.holdings.stockHoldings.filter(s => s.ticker === ticker)[0].heldAmount
@@ -109,13 +105,18 @@ const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
 
     <FormField v-slot="{ componentField }" name="price">
       <FormItem class="mt-4">
-        <FormLabel>Price</FormLabel>
+        <FormLabel>Price with fees</FormLabel>
         <FormControl>
-          <Input class="text-base" step="0.01" type="number" placeholder="Traded price" v-bind.number="componentField" />
+          <Input class="text-base" step="0.01" type="number" placeholder="Total price" v-bind.number="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
+    <span class="text-sm text-muted-foreground" v-if="form.values.price && form.values.amount">Price per unit {{ Math.round(form.values.price / Number(form.values.amount) * 10000) / 10000 }}
+    </span>
+    <div class="mt-2">
+      <p > </p>
+    </div>
 
     <div class="flex flex-row justify-between mt-8">
       <Button class="font-bold bg-green-200" type="submit">

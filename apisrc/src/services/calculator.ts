@@ -10,7 +10,9 @@ export async function calculateStockHoldingsForUser(userInvestments: Investment[
     const stock = s.data as StockInvestment;
     if (Object.keys(stockHoldings).includes(stock.ticker)) {
       if (stock.buyPosition) {
-        stockHoldings[stock.ticker].averageBuyPrice = ((stockHoldings[stock.ticker].heldAmount * stockHoldings[stock.ticker].averageBuyPrice) + (stock.amount * stock.price)) / (stock.amount + stockHoldings[stock.ticker].heldAmount)
+        stockHoldings[stock.ticker].averageBuyPrice = ((stockHoldings[stock.ticker].heldAmount * stockHoldings[stock.ticker].averageBuyPrice) + stock.price )
+            / (stock.amount + stockHoldings[stock.ticker].heldAmount)
+    
         stockHoldings[stock.ticker].heldAmount += stock.amount;
       } else {
         if(stockHoldings[stock.ticker].heldAmount === stock.amount) {
@@ -26,7 +28,7 @@ export async function calculateStockHoldingsForUser(userInvestments: Investment[
         heldAmount: stock.buyPosition 
           ? stock.amount 
           : -1 * stock.amount,
-        averageBuyPrice: stock.price
+        averageBuyPrice: stock.price / stock.amount
       }
     }
   }
@@ -56,8 +58,8 @@ export async function calculateCashHoldingsForUser(investments: Investment[]) {
   for (const r of investments) {
     if (r.data.type === InvestmentTypes.Stock) {
       r.data.buyPosition 
-        ? cash -= (r.data.amount * r.data.price) 
-        : cash += (r.data.amount * r.data.price)
+        ? cash -= (r.data.price) 
+        : cash += (r.data.price)
     }
     else if (r.data.type === InvestmentTypes.Bet) {
       r.data.open === true
