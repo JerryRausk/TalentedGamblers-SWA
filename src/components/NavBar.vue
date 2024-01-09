@@ -13,14 +13,14 @@ import { useUserStore } from '../stores/UserStore';
 const leagueStore = useLeagueStore();
 const userStore = useUserStore();
 const leagueLoading = ref(true);
-const { logout, loginWithPopup, user, isAuthenticated } = useAuth0();
+const { logout, loginWithRedirect, user, isAuthenticated } = useAuth0();
 
 function logoutUser() {
   logout({ logoutParams: { returnTo: window.location.origin } });
 }
 
 function login() {
-  loginWithPopup();
+  loginWithRedirect();
 }
 
 onMounted(async () => {

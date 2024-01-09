@@ -19,8 +19,7 @@ defineProps<{
       <p class="text-sm">
         {{ investment.data.buyPosition ? "Bought" : "Sold" }} {{ investment.data.amount }} of {{ investment.data.ticker }}
         at {{
-          investment.data.price.toLocaleString() }}, totaling {{ (investment.data.price *
-    investment.data.amount).toLocaleString() }}
+          Math.round(investment.data.price / investment.data.amount * 10000) / 10000 }}, totaling {{ investment.data.price.toLocaleString() }}
       </p>
     </div>
 
