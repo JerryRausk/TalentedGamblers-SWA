@@ -26,11 +26,11 @@ onMounted(async () => {
   <div class="p-2 flex flex-col gap-2">
     
     <Skeleton v-if="investmentsLoading" v-for="_ in [1, 2, 3, 4, 5]" class="w-full h-10 rounded" />
-    <div v-else>
+    <div class="flex flex-col gap-2" v-else>
       <div v-if="sortedInvestments.length === 0">
         <p class="text-center">No investments in {{ activeLeague.name }} yet</p>
       </div>
-      <div v-else v-for="li in sortedInvestments">
+      <div  v-else v-for="li in sortedInvestments">
         <InvestmentCard :investment="li" />
       </div>
     </div>

@@ -21,7 +21,7 @@ const formSchema = toTypedSchema(z.object({
   ticker: z.string().min(2).max(50),
   buyPosition: z.boolean().default(true),
   amount: z.number().int().positive(),
-  price: z.number().positive().max(props.holdings.cashHoldings, "You can't afford that")
+  price: z.number().positive()
 }))
 
 const form = useForm({
@@ -31,6 +31,10 @@ const form = useForm({
 const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
   let err = false;
 
+  if (buyPosition && price > props.holdings.cashHoldings) {
+    err = true;
+    form.setFieldError("price", "You can't afford that")
+  }
   if (!buyPosition) {
     const heldOfSelected = props.holdings.stockHoldings.filter(s => s.ticker === ticker)[0].heldAmount
     if (amount > heldOfSelected) {
