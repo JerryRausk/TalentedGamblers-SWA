@@ -95,3 +95,12 @@ export async function calculateOtherInvestmentHoldingsForUser(investments: Inves
   const otherHoldingsList = Object.entries(otherHoldings).map(holding => holding[1]);
   return otherHoldingsList
 }
+
+export async function calculateTotalHoldingValue(investments: Investment[]) {
+  const stocks = (await calculateStockHoldingsForUser(investments)).reduce((acc, curr) => acc += curr.averageBuyPrice * curr.heldAmount, 0);
+  const other = (await calculateOtherInvestmentHoldingsForUser(investments)).reduce((acc, curr) => acc += curr.buyPrice, 0);
+  const bets = (await calculateBetHoldingForUser(investments)).reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0);
+  const cash = await calculateCashHoldingsForUser(investments);
+
+  return stocks + other + bets + cash
+}

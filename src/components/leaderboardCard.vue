@@ -7,6 +7,7 @@ import OtherHoldingCard from "@/src/components/otherInvestmentHoldingCard.vue";
 
 defineProps<{
   holdings: Holdings
+  accentColor?: string
 }>();
 
 const isOpen = ref(false);
@@ -39,7 +40,13 @@ function sumHoldings(holdings: Holdings) {
 <template>
   <div>
     <div @click="isOpen = !isOpen">
-      <p>{{ holdings.userId.split("@")[0] }} <span class="ml-2">{{ sumHoldings(holdings) }}</span></p>
+      <p><span :style="accentColor ? {
+        borderLeft: '2px solid',
+        borderColor: accentColor,
+        paddingLeft: '0.5rem',
+        marginLeft: '0.5rem'
+      } : ''">{{ holdings.userId.split("@")[0] }}</span><span class="ml-2">{{ sumHoldings(holdings) }}</span></p>
+      
       <p class="text-xs text-muted-foreground">{{ leaderboardDetailsText(holdings).join(", ") }}</p>
     </div>
     <div @click="isOpen = false" class="flex flex-row flex-wrap gap-2 mt-3 pb-2 border-b"

@@ -7,7 +7,6 @@ export async function getLeagueMembersQuery(leagueId: string) {
   const cacheKey = `${itemTypes.LeagueMembership}-${leagueId}`
   const cachedMembers = cache.get<LeagueMembership[]>(cacheKey);
   if (cachedMembers) {
-    console.log("Returning cached league members for leagueId ", leagueId);
     return cachedMembers;
   }
   const container = await getContainer();
@@ -22,7 +21,6 @@ export async function getLeagueMembersQuery(leagueId: string) {
     .fetchAll();
 
   const members = res.resources.map(r => stripMetaFromResource<LeagueMembership>(r))
-  console.log("Setting cached league members for leagueId ", leagueId);
   cache.set(cacheKey, members);
   return members;
 }

@@ -7,7 +7,6 @@ export async function getLeagueInvestmentsQuery(leagueId: string) {
     const leagueInvestmentKey = `${itemTypes.Investment}-${leagueId}`
     const cachedInvestments = cache.get<Investment[]>(leagueInvestmentKey)
     if(cachedInvestments) {
-        console.log("Returning cached investments for league ", leagueId);
         return cachedInvestments;
     }
     const container = await getContainer();
@@ -21,7 +20,6 @@ export async function getLeagueInvestmentsQuery(leagueId: string) {
         )
         .fetchAll();
     const investments = res.resources.map(r => stripMetaFromResource<Investment>(r));
-    console.log("Setting cached investmenets for league ", leagueId);
     cache.set(leagueInvestmentKey, investments);
     return investments;
 }

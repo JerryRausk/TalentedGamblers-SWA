@@ -1,4 +1,4 @@
-import { calculateCashHoldingsForUser, calculateBetHoldingForUser, calculateOtherInvestmentHoldingsForUser, calculateStockHoldingsForUser } from "../services/calculator";
+import { calculateCashHoldingsForUser, calculateBetHoldingForUser, calculateOtherInvestmentHoldingsForUser, calculateStockHoldingsForUser } from "../shared/calculator";
 import { getLeagueInvestmentsQuery } from "../queries/getLeagueInvestmentsQuery";
 import { Holdings, LeagueInvestmentsDTO } from "../types/investments";
 import { getLeagueMembersQuery } from "../queries/getLeagueMembersQuery"
