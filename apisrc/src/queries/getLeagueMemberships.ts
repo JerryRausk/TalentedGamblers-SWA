@@ -6,7 +6,6 @@ import { cache } from "../services/cache.js";
 export async function getLeagueMemberships(userId: string) {
     const chachedMemberships = cache.get<LeagueMembership[]>(`${itemTypes.LeagueMembership}-${userId}`)
     if (chachedMemberships) {
-        console.log("Returning cached leaguememberships for user ", userId);
         return chachedMemberships
     }
     const container = await getContainer();
@@ -25,7 +24,6 @@ export async function getLeagueMemberships(userId: string) {
             stripMetaFromResource<LeagueMembership>(r)
         )
     }
-    console.log("Setting cached leaguememberships for user ", userId);
     cache.set(`${itemTypes.LeagueMembership}-${userId}`, memberships);
     return memberships;
 }

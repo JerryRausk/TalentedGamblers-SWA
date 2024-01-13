@@ -13,6 +13,7 @@
     "@auth0/auth0-vue": "^2.3.3",
     "@vee-validate/zod": "^4.12.3",
     "@vueuse/core": "^10.7.0",
+    "chart.js": "^4.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "flowbite": "^2.2.1",
