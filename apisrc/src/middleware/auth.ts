@@ -1,13 +1,17 @@
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { CosmosClient } from "@azure/cosmos";
 import { getItemOrNullById } from "../services/cosmosService.js"
 import { itemTypes } from "../types/dbTypes.js";
+import {cache} from "../services/cache.js"
+
 const TOKENHEADERNAME = "X-App-Authorization";
-const DBNAME = process.env.CosmosDBName;
-const CONTAINERNAME = process.env.CosmosContainerName;
 type User = { email: string, name: string }
 
 async function getUserInfoFromIssuer(token: string) {
+    const cachedUser = cache.get<User>(token);
+    if(cachedUser) {
+        console.log("Returning cached user ", cachedUser.email)
+        return cachedUser
+    }
     const USERINFOURL = process.env.TokenIssuerUrl;
     const EXPECTEDKEYS = ["email", "name"]
     const headers = { "Authorization": token, "Content-Type": "application/json" }
@@ -21,7 +25,10 @@ async function getUserInfoFromIssuer(token: string) {
         console.error(`Details was missing from userinfo, userinfo: ${JSON.stringify(userInfo)}`);
         return null
     }
-    return { email: userInfo["email"], name: userInfo["name"] } as User
+    const user = { email: userInfo["email"], name: userInfo["name"] } as User
+    console.log("Setting cached user ", user.email)
+    cache.set(token, user)
+    return user
 }
 
 async function userIsInvited(user: User) {

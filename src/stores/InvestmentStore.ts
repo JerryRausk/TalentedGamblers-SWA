@@ -21,18 +21,6 @@ export const useInvestmentStore = defineStore('investments', () => {
     return true;
   }
 
-  async function refreshInvestments(leagueId: string) {
-    userInvestments.value = []
-    
-    const res = await postJson<any, Investment[]>("getInvestments", {leagueId})
-    if(!res.success) {
-      console.error("Ultra error not good when fetching investments");
-      return false;
-    }
-    userInvestments.value = res.data;
-    return true;
-  }
-
   async function refreshInvestmentData(leagueId: string, userId: string) {
     _resetStoreData()
     const res = await postJson<any, LeagueInvestmentsDTO>("getLeagueInvestments", {
@@ -46,17 +34,6 @@ export const useInvestmentStore = defineStore('investments', () => {
     _updateStoreData(res.data, userId)
 
     return true;
-  }
-
-  async function refreshHoldings(leagueId: string) {
-    userHoldings.value = null;
-
-    const res = await postJson<{leagueId: string}, Holdings>("getUserHoldings", {leagueId})
-    if(!res.success) {
-      console.error("Ultra error not good when fetching holdings");
-      return false;
-    }
-    userHoldings.value = res.data;
   }
 
   function _updateStoreData(leagueInvDto: LeagueInvestmentsDTO, userId: string) {
@@ -88,5 +65,5 @@ export const useInvestmentStore = defineStore('investments', () => {
     _updateStoreData(res.data, userId)
     return true;
   }
-  return { userInvestments, leagueInvestments, leagueHoldings, addInvestment, userHoldings, refreshInvestments, refreshHoldings, refreshInvestmentData, settleBet }
+  return { userInvestments, leagueInvestments, leagueHoldings, addInvestment, userHoldings, refreshInvestmentData, settleBet }
 })
