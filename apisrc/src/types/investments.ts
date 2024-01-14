@@ -75,3 +75,11 @@ export enum BetResults {
     Win = "win",
     Loss = "loss"
 }
+
+export const MarketSuffix = {
+    Stockholm: ".ST",
+    Oslo: ".OL",
+    Helsinki: ".HE",
+    Copenhagen: ".CO",
+    US: " "
+}

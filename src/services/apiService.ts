@@ -7,6 +7,7 @@ type Endpoint = "getLeagues"
     | "addLeagueMembership"
     | "getLeagueInvestments"
     | "addBetSettled"
+    | "validateStockTicker"
     
 export async function postJson<Tin, Tout>(endpoint: Endpoint, data: Tin) {
     try

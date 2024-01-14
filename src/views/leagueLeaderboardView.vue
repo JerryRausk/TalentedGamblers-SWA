@@ -87,7 +87,7 @@ onMounted(async () => {
           point: {
             borderWidth: 1,
             radius: 2
-          }
+          },
         },
         plugins: {
           legend: {

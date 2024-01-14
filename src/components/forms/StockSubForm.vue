@@ -7,8 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import SwitchNoOff from '@/src/components/ui/switch/SwitchNoOff.vue'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
-import { Holdings } from '@/types/investments'
-
+import { Holdings, MarketSuffix } from '@/types/investments'
+import { ref } from "vue";
+import { postJson } from "@/src/services/apiService"
 const emits = defineEmits<{
   (e: "formSubmit", buyPosition: boolean, ticker: string, amount: number, price: number): void
   (e: "cancel"): void
@@ -17,7 +18,11 @@ const emits = defineEmits<{
 const props = defineProps<{
   holdings: Holdings
 }>();
+
+const generalError = ref([] as string[]);
+
 const formSchema = toTypedSchema(z.object({
+  country: z.string().default(".ST"),
   ticker: z.string().min(2).max(50),
   buyPosition: z.boolean().default(true),
   amount: z.number().int().positive(),
@@ -28,13 +33,23 @@ const form = useForm({
   validationSchema: formSchema,
 })
 
-const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
+async function isTickerValid(internationalTicker: string) {
+  const res = await postJson<Record<string,string>, boolean>("validateStockTicker", {ticker: internationalTicker})
+  if(!res.success) return false;
+  if(!res.data) return false;
+  return true;
+}
+
+const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, country }) => {
+  generalError.value = [];
+  const internationalTicker = (ticker + country).trim()
   let err = false;
 
   if (buyPosition && price > props.holdings.cashHoldings) {
     err = true;
     form.setFieldError("price", "You can't afford that")
   }
+
   if (!buyPosition) {
     const heldOfSelected = props.holdings.stockHoldings.filter(s => s.ticker === ticker)[0].heldAmount
     if (amount > heldOfSelected) {
@@ -43,11 +58,24 @@ const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
     }
   }
 
+  if(!country) {
+    err = true;
+    generalError.value.push("Select a country")
+  }
+
+  if(err) return; // We dont want to make calls to external api's if we are not sure that the data is sane.
+  const tickerIsValid = await isTickerValid(internationalTicker)
+  if (buyPosition && !tickerIsValid) {
+    err = true;
+    generalError.value.push("Ticker is not valid")
+  }
+  console.log(err, internationalTicker, buyPosition, generalError.value)
+
   if (!err) {
     emits(
       "formSubmit",
       buyPosition,
-      ticker.toUpperCase(),
+      internationalTicker.toUpperCase(),
       amount,
       price
     )
@@ -72,17 +100,36 @@ const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
             </p>
           </FormLabel>
         </div>
+      </FormItem>
+    </FormField>
 
+    <div class="flex flex-row gap-4">
+      <FormField v-if="form.values.buyPosition === true" v-slot="{ componentField }" name="country" >
+      <FormItem class="mt-4">
+        <FormLabel>Country</FormLabel>
+        <FormControl>
+          <Select v-bind="componentField" >
+            <SelectTrigger>
+              <SelectValue placeholder="Country" class="text-left w-24" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="[k, v] in Object.entries(MarketSuffix)" :value="v">
+                {{ k }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </FormControl>
+        <FormMessage />
       </FormItem>
     </FormField>
 
     <FormField v-slot="{ componentField }" name="ticker">
-      <FormItem class="mt-4 w-auto">
+      <FormItem class="mt-4 w-full">
         <FormLabel>Ticker</FormLabel>
         <FormControl>
-          <Input class="text-base" v-if="form.values.buyPosition === true" placeholder="APL, VOLV-B, FING-B, etc..."
+          <Input class="text-base" v-if="form.values.buyPosition === true" placeholder="AAPL etc."
             v-bind.string="componentField" />
-          <Select v-else v-bind="componentField">
+          <Select v-else v-bind="componentField" class="w-full">
             <SelectTrigger>
               <SelectValue placeholder="Choose stock to sell" />
             </SelectTrigger>
@@ -96,6 +143,11 @@ const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
         <FormMessage />
       </FormItem>
     </FormField>
+    </div>
+    <div class="mt-2">
+      <span class="text-sm text-muted-foreground" v-if="form.values.country && form.values.ticker && form.values.buyPosition === true">Derived int. ticker {{ form.values.ticker.toUpperCase() + form.values.country }}</span>
+    </div>
+    
 
     <FormField v-slot="{ componentField }" name="amount">
       <FormItem class="mt-4">
@@ -118,8 +170,8 @@ const onSubmit = form.handleSubmit(({ buyPosition, ticker, amount, price }) => {
     </FormField>
     <span class="text-sm text-muted-foreground" v-if="form.values.price && form.values.amount">Price per unit {{ Math.round(form.values.price / Number(form.values.amount) * 10000) / 10000 }}
     </span>
-    <div class="mt-2">
-      <p > </p>
+    <div class="mt-4">
+      <span v-for="err in generalError" class="text-destructive text-base">- {{ err }}</span>
     </div>
 
     <div class="flex flex-row justify-between mt-8">
