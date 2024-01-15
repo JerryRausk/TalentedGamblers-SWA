@@ -9,8 +9,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/src': path.resolve(__dirname, './src'),
-      '@/shared': path.resolve(__dirname, './apisrc/src/shared'),
-      "@/types": path.resolve(__dirname, "./apisrc/src/types")
+      '@/shared': path.resolve(__dirname, '../apisrc/src/shared'),
+      "@/types": path.resolve(__dirname, "../apisrc/src/types")
     },
   },
   build: {

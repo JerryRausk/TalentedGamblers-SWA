@@ -24,10 +24,10 @@
     "baseUrl": ".",
     "paths": {
       "@/src/*": ["./src/*"],
-      "@/shared/*": ["./apisrc/src/shared/*"],
-      "@/types/*": ["./apisrc/src/types/*"]
+      "@/shared/*": ["../apisrc/src/shared/*"],
+      "@/types/*": ["../apisrc/src/types/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "apisrc/src/types/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "../apisrc/src/types/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" } ]
 }

@@ -22,7 +22,7 @@ const props = defineProps<{
 const generalError = ref([] as string[]);
 
 const formSchema = toTypedSchema(z.object({
-  country: z.string().default(".ST"),
+  market: z.string().default(".ST"),
   ticker: z.string().min(2).max(50),
   buyPosition: z.boolean().default(true),
   amount: z.number().int().positive(),
@@ -40,9 +40,9 @@ async function isTickerValid(internationalTicker: string) {
   return true;
 }
 
-const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, country }) => {
+const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, market }) => {
   generalError.value = [];
-  const internationalTicker = (ticker + country).trim()
+  const internationalTicker = (ticker + market).trim()
   let err = false;
 
   if (buyPosition && price > props.holdings.cashHoldings) {
@@ -58,9 +58,9 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
     }
   }
 
-  if(!country) {
+  if(!market) {
     err = true;
-    generalError.value.push("Select a country")
+    generalError.value.push("Select a market")
   }
 
   if(err) return; // We dont want to make calls to external api's if we are not sure that the data is sane.
@@ -69,7 +69,6 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
     err = true;
     generalError.value.push("Ticker is not valid")
   }
-  console.log(err, internationalTicker, buyPosition, generalError.value)
 
   if (!err) {
     emits(
@@ -104,13 +103,13 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
     </FormField>
 
     <div class="flex flex-row gap-4">
-      <FormField v-if="form.values.buyPosition === true" v-slot="{ componentField }" name="country" >
+      <FormField v-if="form.values.buyPosition === true" v-slot="{ componentField }" name="market" >
       <FormItem class="mt-4">
-        <FormLabel>Country</FormLabel>
+        <FormLabel>Market</FormLabel>
         <FormControl>
           <Select v-bind="componentField" >
             <SelectTrigger>
-              <SelectValue placeholder="Country" class="text-left w-24" />
+              <SelectValue placeholder="Market" class="text-left w-24" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="[k, v] in Object.entries(MarketSuffix)" :value="v">
@@ -145,7 +144,7 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
     </FormField>
     </div>
     <div class="mt-2">
-      <span class="text-sm text-muted-foreground" v-if="form.values.country && form.values.ticker && form.values.buyPosition === true">Derived int. ticker {{ form.values.ticker.toUpperCase() + form.values.country }}</span>
+      <span class="text-sm text-muted-foreground" v-if="form.values.market && form.values.ticker && form.values.buyPosition === true">Derived int. ticker {{ form.values.ticker.toUpperCase() + form.values.market }}</span>
     </div>
     
 
