@@ -1,0 +1,14 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "DefaultEndpointsProtocol": "http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1",
+    "CosmosKey": "1X8ndInlkm6OKUqVJ9uanURWpSAa5a0mVJU2h32bt3W3gY0Dh10WlUgROTE3o2BpMKsnO4Ow5RMKACDbtWmFNg",
+    "CosmosUrl": "https://jerryrauskdb.documents.azure.com",
+    "CosmosDBName": "freeshareddb",
+    "CosmosContainerName": "talentedgamblers-test",
+    "BaseTgApiRoute": "https://thankful-cliff-07aa99d03-test.westeurope.4.azurestaticapps.net/api"
+  }
+}

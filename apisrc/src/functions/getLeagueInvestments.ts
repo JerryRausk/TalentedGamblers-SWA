@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { addMiddleWares } from "../middleware/middlewares.js";
-import { User } from "@auth0/auth0-vue";
+import { User } from "../middleware/auth.js";
 import { LeagueMembership } from "../types/league.js";
 import { getLeagueInvestmentsProcess } from "../processes/getLeagueInvestmentsProcess.js";
 
@@ -16,7 +16,7 @@ async function callHandler(request: HttpRequest, _: InvocationContext, user: Use
 
     const leagueInvestments = await getLeagueInvestmentsProcess(leagueId);
 
-    return { status: 201, jsonBody: leagueInvestments }
+    return { status: 200, jsonBody: leagueInvestments }
 }
 
 export async function getLeagueInvestments(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {

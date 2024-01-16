@@ -1,10 +1,10 @@
-import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { HttpRequest, HttpResponseInit } from "@azure/functions";
 import { getItemOrNullById } from "../services/cosmosService.js"
 import { itemTypes } from "../types/dbTypes.js";
 import {cache} from "../services/cache.js"
 
 const TOKENHEADERNAME = "X-App-Authorization";
-type User = { email: string, name: string }
+export type User = { email: string, name: string }
 
 async function getUserInfoFromIssuer(token: string) {
     const cachedUser = cache.get<User>(token);
