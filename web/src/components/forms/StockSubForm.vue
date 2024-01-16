@@ -42,7 +42,6 @@ async function isTickerValid(internationalTicker: string) {
 
 const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, market }) => {
   generalError.value = [];
-  const internationalTicker = (ticker + market).trim()
   let err = false;
 
   if (buyPosition && price > props.holdings.cashHoldings) {
@@ -64,17 +63,21 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
   }
 
   if(err) return; // We dont want to make calls to external api's if we are not sure that the data is sane.
-  const tickerIsValid = await isTickerValid(internationalTicker)
-  if (buyPosition && !tickerIsValid) {
-    err = true;
-    generalError.value.push("Ticker is not valid")
+
+  const reFormattedBuyTicker = (ticker + market).trim();
+  if (buyPosition) {
+    const tickerIsValid = await isTickerValid(reFormattedBuyTicker);
+    if(!tickerIsValid) {
+      err = true;
+      generalError.value.push("Ticker is not valid")
+    }
   }
 
   if (!err) {
     emits(
       "formSubmit",
       buyPosition,
-      internationalTicker.toUpperCase(),
+      buyPosition ? reFormattedBuyTicker.toUpperCase() : ticker.toUpperCase(),
       amount,
       price
     )
