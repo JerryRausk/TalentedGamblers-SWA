@@ -4,7 +4,9 @@ export const itemTypes = {
     LeagueMembership: "LeagueMembership",
     Investment: "Investment",
     UserDetails: "UserDetails",
-    DailyClosing: "DailyClosing"
+    DailyClosing: "DailyClosing",
+    InvalidStockTicker: "InvalidStockTicker",
+    StockPrice: "StockPrice"
 } as const
 
 export type ItemType = typeof itemTypes[keyof(typeof itemTypes)];
@@ -18,4 +20,11 @@ export type UserDetails =
 
 export type InvitedUser = {
     id: string
+}
+
+export type StockPrice = {
+    id: string,
+    ticker: string,
+    epochMsUtc: number,
+    price: number,
 }
