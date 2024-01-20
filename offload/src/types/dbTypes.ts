@@ -23,8 +23,8 @@ export type InvitedUser = {
 }
 
 export type StockPrice = {
-    id: string,
+    id: string, // `${ticker-closeDate}`
     ticker: string,
-    epochMsUtc: number,
+    closeDate: string, // YYYY-MM-DD
     price: number,
 }

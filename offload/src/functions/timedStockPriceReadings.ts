@@ -5,10 +5,9 @@ import { addInvalidStockTickerCommand } from '../commands/addInvalidStockTickerC
 import { StockInvestment } from '../types/investments.js';
 import { getInvalidStockTickersQuery } from '../queries/getInvalidStockTickersQuery.js';
 import { StockPrice } from '../types/dbTypes.js';
-import { addStockPriceCommand } from '../commands/addStockPriceCommand.js';
-import { randomUUID } from 'crypto';
+import { upsertStockPriceCommand } from '../commands/upsertStockPriceCommand.js';
 
-export async function timedStockPriceReadings(_: Timer, context: InvocationContext): Promise<void> {
+export async function timedStockPriceReadings(_: Timer, __: InvocationContext): Promise<void> {
     const invs = await getStockInvestmentsQuery();
     const invsNormalized: Record<string, number> = invs.reduce((acc, curr) => {
         const d = curr.data as StockInvestment
@@ -26,37 +25,44 @@ export async function timedStockPriceReadings(_: Timer, context: InvocationConte
 
     const validLivingTickers = activeTickers.filter(t => !invalidTickers.includes(t))
     console.log("These are the active stock investments: ", JSON.stringify(activeTickers))
-    const TwoMinutesAgo = Math.round(new Date().getTime() / 1000) - 120
-
+    const TwoMinutesAgo = Math.round(new Date().getTime() / 1000) - 60 * 2 * 1 * 1
+    
     for (const ticker of validLivingTickers) {
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?period1=${TwoMinutesAgo}&period2=${TwoMinutesAgo}&useYfid=true&interval=1d`
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?period1=${TwoMinutesAgo}&period2=${TwoMinutesAgo}&useYfid=true&interval=1d&range=5d`
         const res = await fetch(url);
         if (res.status === 404) {
-            context.warn(`Ticker ${ticker} is not valid, persisting it as invalid`)
+            console.warn(`Ticker ${ticker} is not valid, persisting it as invalid`)
             const addInvalidRes = await addInvalidStockTickerCommand(ticker);
-            if(!addInvalidRes) context.error(`Failed to store invalid ticker ${ticker}.`)
+            if (!addInvalidRes) console.error(`Failed to store invalid ticker ${ticker}.`)
             continue;
         }
         if (res.status !== 200) {
-            context.error(`Yahoo failed us at ${url}`);
-            context.error(res.status);
-            context.error(await res.text());
+            console.error(`Yahoo failed us at ${url}`);
+            console.error(res.status);
+            console.error(await res.text());
             continue;
         }
         const dto: yahooDTO = await res.json();
-        const stockPrice = { 
-            id: randomUUID(), 
-            ticker, 
-            price: dto.chart.result[0].indicators.quote[0].close[0], 
-            epochMsUtc: dto.chart.result[0].meta.regularMarketTime * 1000 // comes in seconds instead of ms
-        } satisfies StockPrice
-        const addPriceRes = await addStockPriceCommand(stockPrice);
-        if(!addPriceRes) context.error(`Failed to store price ${stockPrice}.`)
+        dto.chart.result[0].indicators.quote[0].close.map(async (closePrice, index) => {
+            const closeDate = new Date(dto.chart.result[0].timestamp[index] * 1000).toISOString().substring(0, 10)
+            const stockPrice = {
+                id: `${ticker}-${closeDate}`,
+                ticker,
+                price: closePrice,
+                closeDate
+            } satisfies StockPrice
+            const addPriceRes = await upsertStockPriceCommand(stockPrice);
+            if (!addPriceRes) console.error(`Failed to store price ${JSON.stringify(stockPrice)}.`)
+        }
+        )
+
+        
     }
 
 }
 
 app.timer('timedStockPriceReadings', {
     schedule: '0 0 17 * * 1-5', // UTC
-    handler: timedStockPriceReadings
+    handler: timedStockPriceReadings,
+    runOnStartup: process.env.IsRunningLocally === "true"
 });
