@@ -5,7 +5,7 @@ import { itemTypes } from "../types/dbTypes.js";
 const TOKENHEADERNAME = "X-App-Authorization";
 const DBNAME = process.env.CosmosDBName;
 const CONTAINERNAME = process.env.CosmosContainerName;
-type User = { email: string, name: string }
+export type User = { email: string, name: string }
 
 async function getUserInfoFromIssuer(token: string) {
     const USERINFOURL = process.env.TokenIssuerUrl;

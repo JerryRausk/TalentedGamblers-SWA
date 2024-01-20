@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { addMiddleWares } from "../middleware/middlewares.js";
-import { User } from "@auth0/auth0-vue";
+import { User } from "../middleware/auth.js";
 import { LeagueMembership } from "../types/league.js";
 import { getInvestmentsByUserAndLeagueQuery } from "../queries/getInvestmentsByUserAndLeagueQuery.js";
 async function callHandler(request: HttpRequest, _: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
