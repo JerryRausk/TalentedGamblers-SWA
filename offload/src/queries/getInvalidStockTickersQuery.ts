@@ -11,7 +11,7 @@ export async function getInvalidStockTickersQuery() {
             {partitionKey: [itemTypes.InvalidStockTicker]}
         )
         .fetchAll();
-    const invalidTickers = res.resources.map(r => stripMetaFromResource<{ticker: string}>(r));
+    const invalidTickers = res.resources.map(r => stripMetaFromResource<{id: string}>(r));
 
     return invalidTickers.map(i => i.ticker);
 }

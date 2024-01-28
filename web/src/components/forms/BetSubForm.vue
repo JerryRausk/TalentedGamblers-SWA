@@ -25,7 +25,7 @@ const formSchema = toTypedSchema(z.object({
   name: z.string().min(2).max(50),
   amount: z.number().positive().max(props.holdings.cashHoldings),
   odds: z.number().positive().optional(),
-  expiryDate: z.date()
+  expiryDate: z.date().default(new Date())
 }))
 
 const form = useForm({

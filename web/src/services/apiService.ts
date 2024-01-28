@@ -8,6 +8,9 @@ type Endpoint = "getLeagues"
     | "getLeagueInvestments"
     | "addBetSettled"
     | "validateStockTicker"
+    | "getAllInvalidStockTickers"
+    | "updateStockTicker"
+    | "getStockTickerSuggestions"
     
 export async function postJson<Tin, Tout>(endpoint: Endpoint, data: Tin) {
     try
@@ -51,7 +54,8 @@ export async function getJson<T>(endpoint: Endpoint) {
             success: true as const,
             data: await res.json() as T
         }
-    } catch {
+    } catch (err) {
+        console.log(err)
         return {
             success: false as const
         }

@@ -23,8 +23,14 @@ export type InvitedUser = {
 }
 
 export type StockPrice = {
-    id: string,
+    id: string, // `${ticker-closeDate}`
     ticker: string,
-    epochMsUtc: number,
+    closeDate: string, // YYYY-MM-DD
     price: number,
 }
+
+export type InvalidStockTicker = {
+    id: string
+}
+
+export type TickerSuggestion = {ticker: string, longName: string, shortName: string, market: string}

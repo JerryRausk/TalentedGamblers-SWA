@@ -10,6 +10,10 @@ import { Input } from '@/src/components/ui/input'
 import { Holdings, MarketSuffix } from '@/types/investments'
 import { ref } from "vue";
 import { postJson } from "@/src/services/apiService"
+import { Checkbox } from "@/src/components/ui/checkbox"
+
+const INVALID_TICKER_ERROR = "Ticker is not valid"
+
 const emits = defineEmits<{
   (e: "formSubmit", buyPosition: boolean, ticker: string, amount: number, price: number): void
   (e: "cancel"): void
@@ -20,7 +24,7 @@ const props = defineProps<{
 }>();
 
 const generalError = ref([] as string[]);
-
+const forceTicker = ref(false);
 const formSchema = toTypedSchema(z.object({
   market: z.string().default(".ST"),
   ticker: z.string().min(2).max(50),
@@ -65,11 +69,11 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
   if(err) return; // We dont want to make calls to external api's if we are not sure that the data is sane.
 
   const reFormattedBuyTicker = (ticker + market).trim();
-  if (buyPosition) {
+  if (buyPosition && !forceTicker.value) {
     const tickerIsValid = await isTickerValid(reFormattedBuyTicker);
     if(!tickerIsValid) {
       err = true;
-      generalError.value.push("Ticker is not valid")
+      generalError.value.push(INVALID_TICKER_ERROR)
     }
   }
 
@@ -175,7 +179,10 @@ const onSubmit = form.handleSubmit(async ({ buyPosition, ticker, amount, price, 
     <div class="mt-4">
       <span v-for="err in generalError" class="text-destructive text-base">- {{ err }}</span>
     </div>
-
+    <div class="mt-2" v-if="generalError.includes(INVALID_TICKER_ERROR)">
+      <Checkbox v-model:checked="forceTicker" />
+      <span class="text-sm ml-2 align-text-top">Override ticker validation</span>
+    </div>
     <div class="flex flex-row justify-between mt-8">
       <Button class="font-bold bg-green-200" type="submit">
         Add

@@ -12,7 +12,7 @@ import BetHoldingCard from "@/src/components/betHoldingCard.vue";
 import LeaderboardCard from "@/src/components/leaderboardCard.vue";
 import OtherInvestmentHoldingCard from '../components/otherInvestmentHoldingCard.vue';
 import { BetInvestment } from '@/types/investments';
-
+import AdjustStockTicker from "@/src/components/adjustStockTickerCard.vue"
 const props = defineProps<{
   activeLeague: League,
   user: User
@@ -34,7 +34,8 @@ watch(() => leagueStore.activeLeague, async () => {
   if (leagueStore.activeLeague && props.user.email) {
     if (!investmentStore.leagueHoldings || !investmentStore.userHoldings)
       await investmentStore.refreshInvestmentData(leagueStore.activeLeague.id, props.user.email);
-    loading.value = false;
+      loading.value = false;
+      await investmentStore.refreshInvalidStockTickers();
   }
 }, { immediate: true })
 
@@ -60,6 +61,11 @@ const top3LeaderBoardSorted = computed(() => {
   })
   return investmentStore.leagueHoldings.slice(0, 3)
 });
+
+const invalidStockTickers = computed(() => {
+  if(!investmentStore.invalidTickers || !investmentStore.userHoldings) return [];
+  return investmentStore.invalidTickers.filter(it => investmentStore.userHoldings?.stockHoldings.map(sh => sh.ticker).includes(it))
+})
 </script>
 
 <template>
@@ -86,8 +92,17 @@ const top3LeaderBoardSorted = computed(() => {
       <div class="flex flex-row flex-wrap gap-2">
         <BetHoldingCard v-for="b in expiringBets" :show-actions="true" :investment="b" />
       </div>
-
     </div>
+
+    <div v-if="invalidStockTickers.length > 0 && user.email" class="flex flex-col p-2 w-full">
+      <h4 class="font-bold">Invalid stock tickers</h4>
+      <div class="flex flex-row flex-wrap gap-2">
+        <div v-for="i in invalidStockTickers">
+          <AdjustStockTicker :old-ticker="i" :user-id="user.email" :league-id="activeLeague.id" />
+        </div>
+      </div>
+    </div>
+
     <div class="flex flex-col rounded p-2 gap-2">
       <h4 class="font-bold">Investments</h4>
       <Skeleton v-if="loading" v-for="_ in [1, 2, 3]" class="w-full h-14 rounded" />

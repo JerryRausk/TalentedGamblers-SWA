@@ -1,3 +1,36 @@
+# Run locally
+Smoothest experience is with 4 different processes, 2 backend processes (watch and func cli), vite dev server and swa cli.
+
+## Prereqs
+Use Azurite to emulate storage account (table service and blob service required)
+
+create local.settings.json in /apisrc folder
+
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "DefaultEndpointsProtocol": "http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1",
+    "TokenIssuerUrl": "https://talented-gamblers.eu.auth0.com/userinfo",
+    "CosmosKey": "UPDATE-ME-TO-WITH-KEY",
+    "CosmosUrl": "https://jerryrauskdb.documents.azure.com",
+    "CosmosDBName": "freeshareddb",
+    "CosmosContainerName": "talentedgamblers-test"
+  }
+}
+## backend
+run `func host start` in one process
+run `npm run watch` in another process
+
+## Vue frontend
+`npm run dev` in /web folder, will default to http://localhost:5173
+
+## Swa cli
+`swa start http://localhost:5173` in /web folder
+
+
 ## TODO
 
   - Other investments should be treated as a single unit, bought and sold as 1. 

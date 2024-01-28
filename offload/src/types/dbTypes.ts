@@ -28,3 +28,7 @@ export type StockPrice = {
     closeDate: string, // YYYY-MM-DD
     price: number,
 }
+
+export type InvalidStockTicker = {
+    id: string
+}

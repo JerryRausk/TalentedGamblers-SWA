@@ -1,13 +1,15 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { Investment, AddInvestmentDTO, Holdings, LeagueInvestmentsDTO, SettleBetDTO } from "@/types/investments.js"
-import { postJson } from "@/src/services/apiService.js";
+import { getJson, postJson } from "@/src/services/apiService.js";
+import { string } from "zod";
 
 export const useInvestmentStore = defineStore('investments', () => {
   const userHoldings = ref<Holdings | null>(null)
   const userInvestments = ref<Investment[]>([]);
   const leagueInvestments = ref<Investment[]>([]);
   const leagueHoldings = ref<Holdings[] | null>(null)
+  const invalidTickers = ref<string[]>([]);
 
   async function addInvestment(investment: Investment) {
     const res = await postJson<Investment, AddInvestmentDTO>("addInvestment", investment);
@@ -18,6 +20,22 @@ export const useInvestmentStore = defineStore('investments', () => {
 
     _updateStoreData(res.data.leagueInvestments, investment.userId);
 
+    return true;
+  }
+
+  type updateStockTickerDto = {
+    oldTicker: string,
+    newTicker: string,
+    userId: string,
+    leagueId: string
+  }
+  async function updateStockTicker({oldTicker, newTicker, userId, leagueId}: updateStockTickerDto) {
+    const res = await postJson<updateStockTickerDto, {success: boolean}>("updateStockTicker", {oldTicker, newTicker, userId, leagueId})
+    if(!res.success) {
+      console.error("Ultra error when updating stockticker");
+      return false;
+    }
+    refreshInvestmentData(leagueId, userId);
     return true;
   }
 
@@ -34,6 +52,15 @@ export const useInvestmentStore = defineStore('investments', () => {
     _updateStoreData(res.data, userId)
 
     return true;
+  }
+
+  async function refreshInvalidStockTickers() {
+    const res = await getJson<string[]>("getAllInvalidStockTickers");
+    if(!res.success) {
+      console.error("Ultra error when refreshing invalid stock tickers.")
+      return false;
+    }
+    invalidTickers.value = res.data;
   }
 
   function _updateStoreData(leagueInvDto: LeagueInvestmentsDTO, userId: string) {
@@ -65,5 +92,5 @@ export const useInvestmentStore = defineStore('investments', () => {
     _updateStoreData(res.data, userId)
     return true;
   }
-  return { userInvestments, leagueInvestments, leagueHoldings, addInvestment, userHoldings, refreshInvestmentData, settleBet }
+  return { userInvestments, leagueInvestments, leagueHoldings, addInvestment, userHoldings, refreshInvestmentData, settleBet, invalidTickers, refreshInvalidStockTickers, updateStockTicker }
 })
