@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { Investment, AddInvestmentDTO, Holdings, LeagueInvestmentsDTO, SettleBetDTO } from "@/types/investments.js"
 import { getJson, postJson } from "@/src/services/apiService.js";
-import { string } from "zod";
 
 export const useInvestmentStore = defineStore('investments', () => {
   const userHoldings = ref<Holdings | null>(null)
