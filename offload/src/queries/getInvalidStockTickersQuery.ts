@@ -13,5 +13,5 @@ export async function getInvalidStockTickersQuery() {
         .fetchAll();
     const invalidTickers = res.resources.map(r => stripMetaFromResource<{id: string}>(r));
 
-    return invalidTickers.map(i => i.ticker);
+    return invalidTickers.map(i => i.id);
 }
