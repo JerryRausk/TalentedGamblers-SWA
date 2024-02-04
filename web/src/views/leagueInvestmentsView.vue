@@ -14,7 +14,7 @@ const props = defineProps<{
 const investmentStore = useInvestmentStore();
 const investmentsLoading = ref(true);
 const sortedInvestments = computed(() => {
-  return investmentStore.leagueInvestments.sort((a, b) => a.date < b.date ? 1 : -1)
+  return [...investmentStore.leagueInvestments].sort((a, b) => a.date < b.date ? 1 : -1)
 })
 onMounted(async () => {
   await investmentStore.refreshInvestmentData(props.activeLeague.id, props.user.email!);

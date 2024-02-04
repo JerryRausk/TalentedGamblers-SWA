@@ -18,7 +18,7 @@ const investmentStore = useInvestmentStore();
 const loading = ref(true);
 const leaderBoardSorted = computed(() => {
   if (!investmentStore.leagueHoldings) return [];
-  investmentStore.leagueHoldings.sort((a, b) => {
+  [...investmentStore.leagueHoldings].sort((a, b) => {
     const aHoldings = a.cashHoldings
       + a.betHoldings.reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0)
       + a.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)

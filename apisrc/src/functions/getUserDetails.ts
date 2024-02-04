@@ -6,6 +6,7 @@ import { getUserDetailsQuery } from "../queries/getUserDetailsQuery.js";
 
 async function callHandler(_: HttpRequest, __: InvocationContext, user: User, leagueMemberships: LeagueMembership[]): Promise<HttpResponseInit> {
     const queryRes = await getUserDetailsQuery(user.email)
+    console.log("Returning user details");
     return { status: 200, jsonBody: queryRes }
 }
 

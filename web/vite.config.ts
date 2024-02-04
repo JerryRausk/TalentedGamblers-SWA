@@ -1,11 +1,39 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), VitePWA({
+    registerType: "autoUpdate",
+    workbox: {
+      sourcemap: true
+    },
+    manifest: {
+      id: "/index.html",
+      name: "Talented Gamblers",
+      short_name: "TalentedGamblers",
+      description: "App for talented gamblers",
+      start_url: "/index.html",
+      display: "standalone",
+      background_color: "#000000",
+      theme_color: "#000000",
+      icons: [
+        {
+          src: "TG192.png",
+          sizes: "192x192",
+          type: "image/png"
+        },
+        {
+          src: "TG512.png",
+          sizes: "512x512",
+          type: "image/png"
+        }
+      ]
+    },
+    
+ })],
   resolve: {
     alias: {
       '@/src': path.resolve(__dirname, './src'),

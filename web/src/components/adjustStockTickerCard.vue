@@ -16,7 +16,19 @@ const props = defineProps<{
 const open = ref(false);
 const newTicker = ref("");
 const suggestions = ref<TickerSuggestion[]>([]);
+const errorMsg = ref("");
+  async function isTickerValid(internationalTicker: string) {
+  const res = await postJson<Record<string,string>, boolean>("validateStockTicker", {ticker: internationalTicker})
+  if(!res.success) return false;
+  if(!res.data) return false;
+  return true;
+}
 async function handleSubmit() {
+  const tickerIsValid = await isTickerValid(newTicker.value);
+  if(!tickerIsValid) {
+    errorMsg.value = "Invalid, font forget market suffix (.ST, .CO, etc..)"
+    return;
+  }
   await investmentStore.updateStockTicker({
     oldTicker: props.oldTicker,
     newTicker: newTicker.value,
@@ -51,13 +63,14 @@ watch(open, async (newVal) => {
         <option v-for="s in suggestions" :value="s.ticker">{{ s.longName }} ({{ s.market }})</option>
       </datalist>
       <span class="text-xs">To find the correct ticker please visit <a class="text-blue-600" target="_blank" href="https://finance.yahoo.com/">Yahoo</a></span>
+      <span v-if="errorMsg" class="text-destructive text-sm">{{ errorMsg }}</span>
       <div class="flex justify-between mt-4">
-      <Button class="font-bold bg-green-200 flex flex-col" @click="handleSubmit">
-        <p>Fix</p>
-      </Button>
-      <Button class="font-bold" variant="outline" @click="open = false">
-        Cancel
-      </Button>
+        <Button class="font-bold bg-green-200 flex flex-col" @click="handleSubmit">
+          <p>Fix</p>
+        </Button>
+        <Button class="font-bold" variant="outline" @click="open = false">
+          Cancel
+        </Button>
       </div>
     </DialogContent>
   </Dialog>

@@ -41,12 +41,12 @@ watch(() => leagueStore.activeLeague, async () => {
 
 const latestInvestments = computed(() => {
   if (!investmentStore.leagueInvestments) return []
-  return investmentStore.leagueInvestments.sort((a, b) => a.date < b.date ? 1 : -1).slice(0, 3)
+  return [...investmentStore.leagueInvestments].sort((a, b) => a.date < b.date ? 1 : -1).slice(0, 3)
 })
 
 const top3LeaderBoardSorted = computed(() => {
   if (!investmentStore.leagueHoldings) return [];
-  investmentStore.leagueHoldings.sort((a, b) => {
+  [...investmentStore.leagueHoldings].sort((a, b) => {
     const aHoldings = a.cashHoldings
       + a.betHoldings.reduce((acc, curr) => acc += (curr.data as BetInvestment).amount, 0)
       + a.otherInvestmentsHoldings.reduce((acc, curr) => acc += curr.buyPrice, 0)
