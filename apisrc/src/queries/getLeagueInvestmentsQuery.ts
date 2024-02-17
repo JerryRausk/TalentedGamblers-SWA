@@ -3,8 +3,11 @@ import { getContainer, stripMetaFromResource } from "../services/cosmosService";
 import { Investment } from "../types/investments.js";
 import { cache } from "../services/cache.js"
 
+export function getLeagueInvestmentsCacheKey(leagueId: string) {
+    return `${itemTypes.Investment}-${leagueId}`
+  }
 export async function getLeagueInvestmentsQuery(leagueId: string) {
-    const leagueInvestmentKey = `${itemTypes.Investment}-${leagueId}`
+    const leagueInvestmentKey = getLeagueInvestmentsCacheKey(leagueId);
     const cachedInvestments = cache.get<Investment[]>(leagueInvestmentKey)
     if(cachedInvestments) {
         return cachedInvestments;

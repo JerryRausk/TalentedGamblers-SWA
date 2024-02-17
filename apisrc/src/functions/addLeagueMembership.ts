@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { addMiddleWares } from "../middleware/middlewares.js";
-import { User } from "@auth0/auth0-vue";
+import { User } from "../middleware/auth.js";
 import { LeagueMembership, LeagueMembershipTypes } from "../types/league.js";
 import { randomUUID } from "crypto";
 import { addLeagueMembershipCommand } from "../commands/addLeagueMembershipCommand.js";
